@@ -142,19 +142,29 @@ button{font:inherit;color:inherit}
   100%{opacity:0;transform:translate(-50%,-62px) scale(.92)}
 }
 #touchOrigin{
-  position:fixed;z-index:9;width:132px;height:132px;border-radius:50%;
+  position:fixed;z-index:9;width:154px;height:154px;border-radius:50%;
   pointer-events:none;opacity:0;
-  transform:translate(-50%,-50%) scale(.72);
-  background:radial-gradient(circle,rgba(255,255,255,.035) 0 42%,rgba(8,14,25,.28) 43% 100%);
-  border:1px solid rgba(255,255,255,.25);
-  box-shadow:inset 0 0 34px rgba(0,0,0,.28),0 10px 28px rgba(0,0,0,.18);
-  transition:opacity .11s,transform .11s
+  transform:translate(-50%,-50%) scale(.82);
+  background:
+    radial-gradient(circle at 50% 50%,rgba(255,255,255,.035) 0 28%,transparent 29% 48%,rgba(255,255,255,.055) 49% 50%,transparent 51%),
+    radial-gradient(circle,rgba(10,18,31,.12) 0 48%,rgba(7,13,24,.43) 49% 100%);
+  border:1px solid rgba(222,235,255,.34);
+  box-shadow:inset 0 0 42px rgba(0,0,0,.32),0 12px 32px rgba(0,0,0,.22),0 0 0 5px rgba(112,198,255,.035);
+  transition:opacity .09s,transform .09s;
+  will-change:left,top,transform
 }
+#touchOrigin::before,#touchOrigin::after{
+  content:"";position:absolute;left:50%;top:50%;background:rgba(224,238,255,.13);transform:translate(-50%,-50%);border-radius:999px
+}
+#touchOrigin::before{width:62%;height:1px}
+#touchOrigin::after{width:1px;height:62%}
 #touchOrigin.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
 #touchKnob{
-  position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px;
-  border-radius:50%;background:rgba(247,250,255,.9);
-  box-shadow:0 8px 20px rgba(0,0,0,.34),inset 0 1px 0 white;
+  position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px;
+  border-radius:50%;
+  background:radial-gradient(circle at 38% 30%,#fff 0 8%,#edf5ff 25%,#cddced 72%,#a9bacd 100%);
+  border:1px solid rgba(255,255,255,.75);
+  box-shadow:0 9px 23px rgba(0,0,0,.38),inset 0 1px 3px white,0 0 0 5px rgba(255,255,255,.055);
   will-change:transform
 }
 .screen{
@@ -214,9 +224,9 @@ h1{margin:0;font-size:48px;line-height:.94;letter-spacing:-.075em}
   #powerHud{
     left:50%;top:max(188px,calc(env(safe-area-inset-top) + 184px));bottom:auto;
     transform:translateX(-50%);width:calc(100vw - 24px);max-width:390px;
-    flex-direction:row;justify-content:center;align-items:stretch;gap:5px
+    flex-direction:row;flex-wrap:wrap;justify-content:center;align-items:stretch;gap:5px
   }
-  .powerChip{min-width:0;max-width:126px;flex:1;padding:5px 6px;border-radius:11px}
+  .powerChip{min-width:0;max-width:190px;flex:1 1 calc(50% - 5px);padding:5px 6px;border-radius:11px}
   .powerRow{grid-template-columns:21px minmax(0,1fr) auto;gap:4px}.powerIcon{width:21px;height:21px;border-radius:7px;font-size:12px}
   .powerName{font-size:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.powerTime{grid-column:auto;font-size:8px;line-height:1}
   .powerMeter{margin-top:4px;height:2px}
@@ -239,12 +249,12 @@ h1{margin:0;font-size:48px;line-height:.94;letter-spacing:-.075em}
     <div class="pill sizeBox"><div class="label">Size</div><div id="size" class="value">1.0×</div></div>
   </div>
   <div id="progress" class="panel">
-    <div class="progressHead"><span id="level">LEVEL 1 / 20</span><span id="next">Next size</span></div>
+    <div class="progressHead"><span id="level">LEVEL 1 / 50</span><span id="next">Next size</span></div>
     <div class="bar"><div id="levelFill"></div></div>
   </div>
   <div id="combo"></div>
   <div id="powerHud"></div>
-  <div id="hint">WASD / arrows · touch anywhere in the lower half and drag</div>
+  <div id="hint">WASD / arrows · drag anywhere in the lower half</div>
   <div id="minimap" class="panel"><canvas id="map"></canvas></div>
   <button id="soundBtn" class="iconBtn" aria-label="Toggle sound">🔊</button>
   <button id="pauseBtn" class="iconBtn" aria-label="Pause">Ⅱ</button>
@@ -259,9 +269,9 @@ h1{margin:0;font-size:48px;line-height:.94;letter-spacing:-.075em}
   <div class="card">
     <div class="logo"></div>
     <h1>CITY<br>SINK 3D</h1>
-    <p class="subtitle">Move through a living 3D city, drop objects through a real opening, and grow across 20 levels.</p>
+    <p class="subtitle">Travel through an infinite streamed 3D city, swallow material-rich streets and stadium districts, and grow across 50 levels with no world edges.</p>
     <div class="features">
-      <div class="feature"><b>20</b><span>Levels</span></div>
+      <div class="feature"><b>50</b><span>Levels</span></div>
       <div class="feature"><b>▰</b><span>3D City</span></div>
       <div class="feature"><b>✦</b><span>Powers</span></div>
     </div>
@@ -325,49 +335,68 @@ const SPAWN = {x:210,z:210};
 const SPAWN_SAFE_RADIUS = 146;
 const SPAWN_BUFFER = 80;
 const FIELD = {w:286,d:178};
-const SOCCER_FIELDS = [
+const INITIAL_SOCCER_FIELDS = [
   {x:-1050,z:-630,rot:0},
   {x:630,z:1050,rot:Math.PI/2},
   {x:-1470,z:630,rot:0},
   {x:1050,z:-1050,rot:Math.PI/2}
 ];
-const SOCCER_STADIUMS = [
+const INITIAL_SOCCER_STADIUMS = [
   {x:2310,z:1470,rot:0},
   {x:-2310,z:-1470,rot:Math.PI}
 ];
-const LEVELS = [
-  {r:24,m:0},
-  {r:29,m:28},
-  {r:35,m:70},
-  {r:42,m:130},
-  {r:50,m:215},
-  {r:59,m:330},
-  {r:69,m:480},
-  {r:80,m:675},
-  {r:92,m:925},
-  {r:105,m:1240},
-  {r:119,m:1640},
-  {r:134,m:2140},
-  {r:150,m:2760},
-  {r:167,m:3520},
-  {r:185,m:4450},
-  {r:204,m:5580},
-  {r:224,m:6950},
-  {r:245,m:8600},
-  {r:267,m:10600},
-  {r:290,m:13000}
-];
+const SOCCER_FIELDS = INITIAL_SOCCER_FIELDS.map(field=>({...field}));
+const SOCCER_STADIUMS = INITIAL_SOCCER_STADIUMS.map(stadium=>({...stadium}));
+const LEVELS = (()=>{
+  const levels=[
+    {r:24,m:0},{r:29,m:28},{r:35,m:70},{r:42,m:130},{r:50,m:215},
+    {r:59,m:330},{r:69,m:480},{r:80,m:675},{r:92,m:925},{r:105,m:1240},
+    {r:119,m:1640},{r:134,m:2140},{r:150,m:2760},{r:167,m:3520},{r:185,m:4450},
+    {r:204,m:5580},{r:224,m:6950},{r:245,m:8600},{r:267,m:10600},{r:290,m:13000}
+  ];
+  // Preserve the original first 20 levels, then extend progression smoothly
+  // without sudden radius or mass jumps. Level 50 tops out near city-block scale.
+  for(let step=1;step<=30;step++){
+    levels.push({
+      r:Math.round(290+11.5*step+.14*step*step),
+      m:Math.round(13000+1200*step+40*step*step+1.8*step*step*step)
+    });
+  }
+  return levels;
+})();
 const RUN_DURATION=240;
-const MAX_RUN_TIME=300;
+const MAX_RUN_TIME=420;
 const LEVEL_TIME_BONUS=3;
 const LEVEL_COUNT=LEVELS.length;
+const CITY_RENEWAL={
+  checkEvery:2.5,
+  targetBase:620,
+  targetPerLevel:3,
+  targetMax:770,
+  triggerRatio:.74,
+  maxBatch:145,
+  minPlayerDistance:920,
+  maxObjects:940
+};
+const INFINITE_CITY={
+  // Rebase only by exact road-grid multiples. The visual road network therefore
+  // remains continuous while numerical coordinates stay small and stable.
+  rebaseThreshold:WORLD.roadGap*2,
+  cullMargin:WORLD.roadGap*1.35,
+  streamOverlap:WORLD.roadGap*.55,
+  densityAreaPerObject:23500,
+  minimumBandObjects:34,
+  maximumBandObjects:150,
+  fieldTarget:4,
+  stadiumTarget:2
+};
 const POWER_DEFS={
-  vortex:{name:'GRAVITY WELL',icon:'◎',color:'#a879ff',duration:7.5,weight:1,description:'Pulls nearby objects inward'},
-  overdrive:{name:'OVERDRIVE',icon:'»',color:'#59dcff',duration:8,weight:1,description:'Faster movement and tighter steering'},
-  colossus:{name:'COLOSSUS',icon:'◆',color:'#ffd66b',duration:7,weight:1,description:'Temporarily enlarges the hole'},
-  time:{name:'TIME SHARD',icon:'+',color:'#69e7aa',weight:1,instant:true,description:'+12 seconds'},
+  vortex:{name:'GRAVITY WELL',icon:'◎',color:'#a879ff',duration:12,weight:1,description:'Pulls nearby objects inward'},
+  overdrive:{name:'OVERDRIVE',icon:'»',color:'#59dcff',duration:13,weight:1,description:'Faster movement and tighter steering'},
+  colossus:{name:'COLOSSUS',icon:'◆',color:'#ffd66b',duration:11.5,weight:1,description:'Temporarily enlarges the hole'},
+  time:{name:'TIME SHARD',icon:'+',color:'#69e7aa',weight:1,instant:true,description:'+18 seconds'},
   eventHorizon:{
-    name:'EVENT HORIZON',icon:'✦',color:'#ff5bd7',duration:6.5,weight:.09,rarity:'mythic',
+    name:'EVENT HORIZON',icon:'✦',color:'#ff5bd7',duration:9.5,weight:.11,rarity:'mythic',
     description:'Massive hole, extreme pull, time dilation, and double score'
   }
 };
@@ -428,6 +457,12 @@ const TALL_TYPES=new Set(['cornerFlag','mailbox','hydrant','tree','streetlight',
 const VEHICLE_TYPES=new Set(['scooter','car','van','truck','bus']);
 const CIRCLE_COLLIDER_TYPES=new Set(['paper','ball','soccerBall','cone','cornerFlag','mailbox','hydrant','bin','tree','streetlight','fountain','statue']);
 const HEAVY_TYPES=new Set(['fountain','bleachers','statue','house','shop','apartment','tower','stadium']);
+const OBJECT_MATERIAL={
+  paper:'paper',ball:'rubber',soccerBall:'rubber',cone:'plastic',cornerFlag:'metal',mailbox:'metal',
+  hydrant:'metal',bin:'plastic',scooter:'vehicle',tree:'foliage',bench:'wood',streetlight:'metal',goal:'metal',
+  car:'vehicle',van:'vehicle',truck:'vehicle',bus:'vehicle',fountain:'masonry',bleachers:'metal',statue:'masonry',
+  scoreboard:'metal',house:'structure',shop:'structure',apartment:'structure',tower:'structure',stadium:'structure'
+};
 function physicsProfile(type,dims,mass){
   const round=ROUND_TYPES.has(type),vehicle=VEHICLE_TYPES.has(type),tall=TALL_TYPES.has(type);
   const heavy=HEAVY_TYPES.has(type),circle=CIRCLE_COLLIDER_TYPES.has(type);
@@ -977,18 +1012,26 @@ const hudCache={score:'',timer:'',low:null,size:'',level:'',next:'',progress:''}
 let mapLogicalWidth=120,mapLogicalHeight=88,mapScale=1,lastMapDraw=-Infinity,mapDirty=true;
 const mapStaticCanvas=document.createElement('canvas'),mapStaticCtx=mapStaticCanvas.getContext('2d');
 let contextLost=false,contextWasPlaying=false;
-let powerups=[],nextPowerId=1,powerSpawnTimer=8.5,powerHudSignature='';
+let powerups=[],nextPowerId=1,powerSpawnTimer=4.5,powerHudSignature='';
+let cityRenewalTimer=CITY_RENEWAL.checkEvery,cityGeneration=0;
+let worldTravelX=0,worldTravelZ=0,streamGeneration=0;
+const startPlaza={x:SPAWN.x,z:SPAWN.z,active:true};
+let stadiumAmbienceTimer=4.5,trafficHornTimer=3.2;
 let regularSpawnsSinceMythic=0,lastMythicSpawn=-999;
 const activePowers={vortex:0,overdrive:0,colossus:0,eventHorizon:0};
 let blockedPulse=0,holePulse=0,runEaten=0;
-let soundOn=true,audio=null,audioMaster=null,audioDry=null,audioWet=null,audioConvolver=null,audioNoise=null;
+let soundOn=true,audio=null,audioMaster=null,audioDry=null,audioWet=null,audioConvolver=null,audioNoise=null,audioLoops=null;
+const audioBuffers={};
+let audioLastSwallow=-999,audioSwallowCluster=0;
 const audioVoices=[];
 const AUDIO_LIMITS={total:34,effects:16,locator:4,music:10,ui:4};
 let projection=m4(),view=m4();
 let player={x:0,z:0,r:LEVELS[0].r,vx:0,vz:0};
 let camera={x:0,y:260,z:360,lookX:0,lookZ:0};
-let input={x:0,z:0,active:false,keys:new Set()};
-let touchPointer=null,touchStartX=0,touchStartY=0;
+let input={x:0,z:0,active:false,keys:new Set(),source:'none'};
+let touchPointer=null,touchCenterX=0,touchCenterY=0,touchLastX=0,touchLastY=0;
+const JOYSTICK_RADIUS=72;
+const JOYSTICK_DEAD_ZONE=5;
 
 function resizeMinimap(){
   const rect=mapCanvas.getBoundingClientRect();
@@ -1014,7 +1057,7 @@ addEventListener('resize',resize,{passive:true});resize();
 
 function cleanupAudioVoice(voice){
   const index=audioVoices.indexOf(voice);if(index>=0)audioVoices.splice(index,1);
-  for(const node of voice.nodes){try{node.disconnect()}catch(_){}}
+  for(const node of voice.nodes){try{node.disconnect()}catch(_){} }
 }
 function stopAudioVoice(voice,when=0){
   if(voice.stopped)return;voice.stopped=true;
@@ -1039,36 +1082,119 @@ function registerAudioVoice(source,nodes,category='effects',priority=1){
   source.onended=()=>cleanupAudioVoice(voice);
   return voice;
 }
-function createReverbImpulse(context,duration=1.35,decay=3.2){
+function createReverbImpulse(context,duration=1.65,decay=3.55){
   const length=Math.max(1,Math.floor(context.sampleRate*duration));
   const buffer=context.createBuffer(2,length,context.sampleRate);
   for(let channel=0;channel<2;channel++){
     const data=buffer.getChannelData(channel);
+    let memory=0;
     for(let i=0;i<length;i++){
       const envelope=Math.pow(1-i/length,decay);
-      data[i]=(Math.random()*2-1)*envelope*(channel?0.92:1);
+      memory=memory*.52+(Math.random()*2-1)*.48;
+      data[i]=(memory*.66+(Math.random()*2-1)*.34)*envelope*(channel?.91:1);
     }
   }
   return buffer;
 }
-function initAudio(){
-  if(audio)return;
-  const AudioContextClass=window.AudioContext||window.webkitAudioContext;
-  if(!AudioContextClass)return;
-  audio=new AudioContextClass();
-  audioMaster=audio.createGain();audioMaster.gain.value=.72;
-  audioDry=audio.createGain();audioDry.gain.value=.94;
-  audioWet=audio.createGain();audioWet.gain.value=.20;
-  audioConvolver=audio.createConvolver();audioConvolver.buffer=createReverbImpulse(audio);
-  const compressor=audio.createDynamicsCompressor();
-  compressor.threshold.value=-19;compressor.knee.value=18;compressor.ratio.value=3.2;
-  compressor.attack.value=.004;compressor.release.value=.24;
-  audioDry.connect(audioMaster);audioWet.connect(audioConvolver);audioConvolver.connect(audioMaster);
-  audioMaster.connect(compressor);compressor.connect(audio.destination);
-  audioNoise=audio.createBuffer(1,audio.sampleRate,audio.sampleRate);
-  const noise=audioNoise.getChannelData(0);
-  let last=0;
-  for(let i=0;i<noise.length;i++){last=last*.78+(Math.random()*2-1)*.22;noise[i]=last}
+function createDesignedBuffer(context,duration,designer){
+  const length=Math.max(1,Math.floor(context.sampleRate*duration));
+  const buffer=context.createBuffer(1,length,context.sampleRate),data=buffer.getChannelData(0);
+  for(let i=0;i<length;i++)data[i]=clamp(designer(i/context.sampleRate,i/length),-1,1);
+  return buffer;
+}
+function buildAudioBuffers(){
+  if(!audio||audioBuffers.metalImpact)return;
+  const modal=(t,modes)=>modes.reduce((sum,[frequency,amplitude,decay,phase=0])=>sum+Math.sin(TAU*frequency*t+phase)*amplitude*Math.exp(-t*decay),0);
+  const impulse=(t,at,width=80)=>t>=at?Math.exp(-(t-at)*width):0;
+
+  audioBuffers.subImpact=createDesignedBuffer(audio,1.05,(t,p)=>{
+    const pitch=58-28*p;
+    return Math.sin(TAU*pitch*t)*Math.exp(-t*7.2)*.78+(Math.random()*2-1)*Math.exp(-t*34)*.20;
+  });
+  audioBuffers.metalImpact=createDesignedBuffer(audio,1.35,(t,p)=>{
+    const strike=(Math.random()*2-1)*(impulse(t,0,105)*.78+impulse(t,.052,82)*.28+impulse(t,.125,68)*.18);
+    const ring=modal(t,[[286,.30,3.2],[477,.24,4.0,.7],[731,.18,4.8,1.4],[1138,.12,6.2,.3],[1730,.07,8.5,2.0]]);
+    return strike+ring;
+  });
+  audioBuffers.metalScrape=createDesignedBuffer(audio,.82,(t,p)=>{
+    const envelope=Math.pow(1-p,1.8),pulse=.55+.45*Math.sin(TAU*(21+9*p)*t);
+    const grit=(Math.random()*2-1)*envelope*pulse*.52;
+    const squeal=Math.sin(TAU*(1040+720*Math.sin(t*8.4))*t)*envelope*.13;
+    return grit+squeal;
+  });
+  audioBuffers.masonry=createDesignedBuffer(audio,1.45,(t,p)=>{
+    const low=modal(t,[[48,.62,5.0],[73,.31,7.2,.5],[118,.17,9.4,1.1]]);
+    const crumble=(Math.random()*2-1)*Math.pow(1-p,2.0)*(.28+.22*Math.sin(t*77));
+    const cracks=(Math.random()<.0065?rnd(-1,1):0)*Math.pow(1-p,1.4)*.82;
+    return low+crumble+cracks;
+  });
+  audioBuffers.wood=createDesignedBuffer(audio,.92,(t,p)=>{
+    const knock=modal(t,[[142,.42,6.5],[257,.28,8.2,.4],[418,.16,11,1.1],[690,.08,15,.7]]);
+    const split=(Math.random()*2-1)*(impulse(t,0,115)*.46+impulse(t,.082,94)*.31+impulse(t,.19,75)*.18);
+    return knock+split;
+  });
+  audioBuffers.plastic=createDesignedBuffer(audio,.58,(t,p)=>{
+    const hollow=modal(t,[[224,.36,8.5],[367,.22,10.5,.8],[612,.13,14,1.7]]);
+    const clack=(Math.random()*2-1)*(impulse(t,0,130)*.54+impulse(t,.06,105)*.22);
+    return hollow+clack;
+  });
+  audioBuffers.rubber=createDesignedBuffer(audio,.52,(t,p)=>{
+    const thump=modal(t,[[82,.62,11],[128,.23,15,.5],[205,.10,20,1.3]]);
+    const skin=(Math.random()*2-1)*impulse(t,0,150)*.23;
+    return thump+skin;
+  });
+  audioBuffers.foliage=createDesignedBuffer(audio,.78,(t,p)=>{
+    const gust=(Math.random()*2-1)*Math.pow(1-p,2.2)*(.40+.28*Math.sin(TAU*17*t));
+    const twigs=(Math.random()<.011?rnd(-1,1):0)*Math.pow(1-p,2.8)*.48;
+    return gust+twigs;
+  });
+  audioBuffers.paper=createDesignedBuffer(audio,.44,(t,p)=>{
+    const flutter=(Math.random()*2-1)*Math.pow(1-p,2.7)*(.36+.34*Math.sin(TAU*(31+18*p)*t));
+    return flutter;
+  });
+  audioBuffers.glass=createDesignedBuffer(audio,1.32,(t,p)=>{
+    const strike=(Math.random()*2-1)*impulse(t,0,150)*.22;
+    const ring=modal(t,[[1047,.26,3.6],[1480,.20,4.3,.5],[2093,.15,5.0,1.2],[2870,.10,6.3,.2],[3615,.06,8.0,1.8]]);
+    const shards=(Math.random()<.0038?rnd(-1,1):0)*Math.pow(1-p,2.1)*.36;
+    return strike+ring+shards;
+  });
+  audioBuffers.energyDrop=createDesignedBuffer(audio,.86,(t,p)=>{
+    const wind=(Math.random()*2-1)*Math.sin(Math.PI*p)*.30;
+    const body=Math.sin(TAU*(310-215*p)*t)*Math.sin(Math.PI*p)*.22;
+    return wind+body;
+  });
+  audioBuffers.brick=createDesignedBuffer(audio,1.18,(t,p)=>{
+    const thud=modal(t,[[64,.58,6.2],[101,.30,8.5,.4],[167,.15,11.5,1.2]]);
+    const chips=(Math.random()*2-1)*Math.pow(1-p,2.15)*(.18+.26*Math.sin(t*93));
+    const snaps=(Math.random()<.0085?rnd(-1,1):0)*Math.pow(1-p,1.65)*.72;
+    return thud+chips+snaps;
+  });
+  audioBuffers.rock=createDesignedBuffer(audio,1.30,(t,p)=>{
+    const body=modal(t,[[43,.72,4.5],[69,.36,6.7,.7],[112,.19,9.3,1.6],[191,.08,13,.2]]);
+    const grit=(Math.random()*2-1)*Math.pow(1-p,1.7)*.24;
+    return body+grit;
+  });
+  audioBuffers.horn=createDesignedBuffer(audio,.72,(t,p)=>{
+    const env=Math.sin(Math.PI*Math.min(1,p*1.35))*Math.pow(1-p,.58);
+    const vibrato=1+.006*Math.sin(TAU*5.2*t);
+    return (Math.sin(TAU*392*vibrato*t)*.42+Math.sin(TAU*494*vibrato*t)*.24+Math.sin(TAU*784*vibrato*t)*.10)*env;
+  });
+  audioBuffers.whistle=createDesignedBuffer(audio,.78,(t,p)=>{
+    const env=Math.sin(Math.PI*Math.min(1,p*1.65))*Math.pow(1-p,.42);
+    const f=1860+185*Math.sin(TAU*7.1*t)+95*Math.sin(TAU*2.2*t);
+    return (Math.sin(TAU*f*t)*.62+Math.sin(TAU*f*2*t)*.12)*env;
+  });
+  audioBuffers.chant=createDesignedBuffer(audio,2.25,(t,p)=>{
+    const pulse=.42+.58*Math.max(0,Math.sin(TAU*2.05*t));
+    const crowd=(Math.random()*2-1)*.34+Math.sin(TAU*118*t)*.10+Math.sin(TAU*154*t+.7)*.08;
+    return crowd*pulse*Math.sin(Math.PI*p)*.72;
+  });
+
+  // Compatibility aliases used by UI and legacy event calls.
+  audioBuffers.metal=audioBuffers.metalImpact;
+  audioBuffers.debris=audioBuffers.masonry;
+  audioBuffers.crystal=audioBuffers.glass;
+  audioBuffers.snap=audioBuffers.plastic;
 }
 function routeAudio(node,pan=0,wet=.14){
   const spatial=audio.createStereoPanner?audio.createStereoPanner():audio.createGain();
@@ -1078,80 +1204,257 @@ function routeAudio(node,pan=0,wet=.14){
   if(wet>0){const send=audio.createGain();send.gain.value=wet;spatial.connect(send);send.connect(audioWet);nodes.push(send)}
   return nodes;
 }
+function createAdaptiveLoop(type,frequency,filterFrequency,wet=.05){
+  const oscillator=audio.createOscillator(),filter=audio.createBiquadFilter(),gain=audio.createGain();
+  oscillator.type=type;oscillator.frequency.value=frequency;
+  filter.type='lowpass';filter.frequency.value=filterFrequency;filter.Q.value=.65;
+  gain.gain.value=.0001;oscillator.connect(filter);filter.connect(gain);
+  const routeNodes=routeAudio(gain,0,wet);oscillator.start();
+  return{oscillator,filter,gain,nodes:[oscillator,filter,gain,...routeNodes]};
+}
+function createAdaptiveNoise(){
+  const source=audio.createBufferSource(),filter=audio.createBiquadFilter(),gain=audio.createGain();
+  source.buffer=audioNoise;source.loop=true;filter.type='bandpass';filter.frequency.value=700;filter.Q.value=.72;gain.gain.value=.0001;
+  source.connect(filter);filter.connect(gain);const routeNodes=routeAudio(gain,0,.035);source.start();
+  return{source,filter,gain,nodes:[source,filter,gain,...routeNodes]};
+}
+function buildAdaptiveAudio(){
+  if(!audio||audioLoops)return;
+  audioLoops={
+    movement:createAdaptiveLoop('sine',38,210,.01),
+    air:createAdaptiveNoise(),
+    vortexA:createAdaptiveLoop('sine',47,330,.11),
+    vortexB:createAdaptiveLoop('sine',55,460,.14),
+    overdrive:createAdaptiveLoop('sawtooth',92,1250,.035),
+    colossus:createAdaptiveLoop('sine',32,230,.065),
+    mythicLow:createAdaptiveLoop('sine',27,210,.13),
+    mythicHigh:createAdaptiveLoop('sine',710,2600,.22)
+  };
+}
+function initAudio(){
+  if(audio)return;
+  const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+  if(!AudioContextClass)return;
+  audio=new AudioContextClass();
+  audioMaster=audio.createGain();audioMaster.gain.value=.68;
+  audioDry=audio.createGain();audioDry.gain.value=.92;
+  audioWet=audio.createGain();audioWet.gain.value=.23;
+  audioConvolver=audio.createConvolver();audioConvolver.buffer=createReverbImpulse(audio);
+  const lowShelf=audio.createBiquadFilter(),highShelf=audio.createBiquadFilter(),compressor=audio.createDynamicsCompressor();
+  lowShelf.type='lowshelf';lowShelf.frequency.value=118;lowShelf.gain.value=2.2;
+  highShelf.type='highshelf';highShelf.frequency.value=4300;highShelf.gain.value=1.35;
+  compressor.threshold.value=-18;compressor.knee.value=15;compressor.ratio.value=4.1;
+  compressor.attack.value=.0035;compressor.release.value=.26;
+  audioDry.connect(audioMaster);audioWet.connect(audioConvolver);audioConvolver.connect(audioMaster);
+  audioMaster.connect(lowShelf);lowShelf.connect(highShelf);highShelf.connect(compressor);compressor.connect(audio.destination);
+  audioNoise=audio.createBuffer(1,audio.sampleRate*2,audio.sampleRate);
+  const noise=audioNoise.getChannelData(0);let pink=0;
+  for(let i=0;i<noise.length;i++){pink=pink*.82+(Math.random()*2-1)*.18;noise[i]=pink*.72+(Math.random()*2-1)*.28}
+  buildAudioBuffers();buildAdaptiveAudio();
+}
+function setAudioParam(param,value,time=.08){
+  if(!audio||!param)return;
+  try{param.setTargetAtTime(Math.max(.0001,value),audio.currentTime,time)}catch(_){param.value=Math.max(.0001,value)}
+}
+function silenceAdaptiveAudio(time=.06){
+  if(!audioLoops)return;
+  for(const loop of Object.values(audioLoops))setAudioParam(loop.gain.gain,.0001,time);
+}
+function updateAdaptiveAudio(){
+  if(!audio||!audioLoops||!soundOn){silenceAdaptiveAudio(.04);return}
+  const playing=state==='playing';
+  const speed=playing?Math.hypot(player.vx,player.vz):0;
+  const motion=clamp((speed-12)/330,0,1),growth=growthProgress();
+  setAudioParam(audioLoops.movement.gain.gain,motion*(.0022+growth*.0015),.08);
+  setAudioParam(audioLoops.movement.oscillator.frequency,34+speed*.055+growth*7,.08);
+  setAudioParam(audioLoops.movement.filter.frequency,180+speed*1.15,.10);
+  setAudioParam(audioLoops.air.gain.gain,motion*motion*.017,.10);
+  setAudioParam(audioLoops.air.filter.frequency,420+speed*7.4,.09);
+  const vortex=playing&&activePowers.vortex>0?1:0;
+  const overdrive=playing&&activePowers.overdrive>0?1:0;
+  const colossus=playing&&activePowers.colossus>0?1:0;
+  const mythic=playing&&activePowers.eventHorizon>0?1:0;
+  setAudioParam(audioLoops.vortexA.gain.gain,vortex*.014+mythic*.009,.10);
+  setAudioParam(audioLoops.vortexB.gain.gain,vortex*.010+mythic*.008,.12);
+  setAudioParam(audioLoops.vortexB.oscillator.frequency,60.5+Math.sin(simulationClock*2.1)*3.4,.08);
+  setAudioParam(audioLoops.overdrive.gain.gain,overdrive*(.010+motion*.011)+mythic*.004,.065);
+  setAudioParam(audioLoops.overdrive.oscillator.frequency,118+speed*.34,.055);
+  setAudioParam(audioLoops.overdrive.filter.frequency,1250+speed*7.0,.075);
+  setAudioParam(audioLoops.colossus.gain.gain,colossus*.019+mythic*.010,.12);
+  setAudioParam(audioLoops.mythicLow.gain.gain,mythic*.026,.12);
+  setAudioParam(audioLoops.mythicHigh.gain.gain,mythic*(.0045+.0025*Math.sin(simulationClock*3.6)**2),.16);
+  setAudioParam(audioLoops.mythicHigh.oscillator.frequency,760+Math.sin(simulationClock*.85)*105,.15);
+}
 function synthTone(freq,dur,options={}){
   if(!soundOn)return;
   initAudio();if(!audio||audio.state==='suspended')return;
   const start=audio.currentTime+(options.delay||0),end=start+dur;
   const oscillator=audio.createOscillator(),filter=audio.createBiquadFilter(),gain=audio.createGain();
-  oscillator.type=options.type||'sine';
-  oscillator.frequency.setValueAtTime(Math.max(28,freq),start);
+  oscillator.type=options.type||'sine';oscillator.frequency.setValueAtTime(Math.max(24,freq),start);
   if(options.detune)oscillator.detune.setValueAtTime(options.detune,start);
-  const endFreq=Math.max(28,options.endFreq??freq);
+  const endFreq=Math.max(24,options.endFreq??freq);
   if(Math.abs(endFreq-freq)>.01)oscillator.frequency.exponentialRampToValueAtTime(endFreq,end);
-  filter.type=options.filterType||'lowpass';
-  filter.frequency.setValueAtTime(options.filter??Math.min(12000,Math.max(900,freq*7)),start);
-  filter.Q.value=options.q??.6;
-  const volume=Math.max(.0001,options.vol??.04),attack=Math.min(dur*.42,options.attack??.008);
-  gain.gain.setValueAtTime(.0001,start);
-  gain.gain.exponentialRampToValueAtTime(volume,start+Math.max(.002,attack));
+  filter.type=options.filterType||'lowpass';filter.frequency.setValueAtTime(options.filter??Math.min(14000,Math.max(900,freq*7)),start);filter.Q.value=options.q??.6;
+  const volume=Math.max(.0001,options.vol??.04),attack=Math.min(dur*.42,options.attack??.008),releaseStart=Math.max(start+attack+.002,end-(options.release??dur*.72));
+  gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(volume,start+Math.max(.002,attack));
+  if(options.sustain)gain.gain.setValueAtTime(volume*options.sustain,releaseStart);
   gain.gain.exponentialRampToValueAtTime(.0001,end);
-  oscillator.connect(filter);filter.connect(gain);
-  const routeNodes=routeAudio(gain,options.pan||0,options.wet??.14);
+  oscillator.connect(filter);filter.connect(gain);const routeNodes=routeAudio(gain,options.pan||0,options.wet??.14);
   registerAudioVoice(oscillator,[filter,gain,...routeNodes],options.category||'effects',options.priority??1);
-  oscillator.start(start);oscillator.stop(end+.03);
+  oscillator.start(start);oscillator.stop(end+.035);
+}
+function fmTone(freq,dur,options={}){
+  if(!soundOn)return;
+  initAudio();if(!audio||audio.state==='suspended')return;
+  const start=audio.currentTime+(options.delay||0),end=start+dur;
+  const carrier=audio.createOscillator(),modulator=audio.createOscillator(),modGain=audio.createGain(),filter=audio.createBiquadFilter(),gain=audio.createGain();
+  carrier.type=options.type||'sine';carrier.frequency.setValueAtTime(freq,start);
+  if(options.endFreq)carrier.frequency.exponentialRampToValueAtTime(Math.max(24,options.endFreq),end);
+  modulator.type=options.modType||'sine';modulator.frequency.setValueAtTime(freq*(options.ratio??2.01),start);
+  modGain.gain.setValueAtTime(freq*(options.index??1.5),start);modGain.gain.exponentialRampToValueAtTime(Math.max(.1,freq*(options.endIndex??.05)),end);
+  modulator.connect(modGain);modGain.connect(carrier.frequency);
+  filter.type=options.filterType||'lowpass';filter.frequency.setValueAtTime(options.filter??7000,start);filter.Q.value=options.q??.8;
+  const volume=Math.max(.0001,options.vol??.026),attack=options.attack??.004;
+  gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(volume,start+attack);gain.gain.exponentialRampToValueAtTime(.0001,end);
+  carrier.connect(filter);filter.connect(gain);const routeNodes=routeAudio(gain,options.pan||0,options.wet??.28);
+  registerAudioVoice(carrier,[modulator,modGain,filter,gain,...routeNodes],options.category||'effects',options.priority??1);
+  carrier.start(start);modulator.start(start);carrier.stop(end+.04);modulator.stop(end+.04);
 }
 function noiseBurst(dur,options={}){
   if(!soundOn)return;
   initAudio();if(!audio||audio.state==='suspended'||!audioNoise)return;
-  const start=audio.currentTime+(options.delay||0),source=audio.createBufferSource(),filter=audio.createBiquadFilter(),gain=audio.createGain();
-  source.buffer=audioNoise;filter.type=options.filterType||'bandpass';filter.frequency.value=options.filter||900;filter.Q.value=options.q||.8;
-  const volume=Math.max(.0001,options.vol??.025);
-  gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(volume,start+.006);gain.gain.exponentialRampToValueAtTime(.0001,start+dur);
-  source.connect(filter);filter.connect(gain);
-  const routeNodes=routeAudio(gain,options.pan||0,options.wet??.08);
+  const start=audio.currentTime+(options.delay||0),end=start+dur,source=audio.createBufferSource(),filter=audio.createBiquadFilter(),gain=audio.createGain();
+  source.buffer=audioNoise;filter.type=options.filterType||'bandpass';filter.frequency.setValueAtTime(options.startFilter??options.filter??900,start);
+  const targetFilter=Math.max(35,options.endFilter??options.filter??900);if(targetFilter!==(options.startFilter??options.filter??900))filter.frequency.exponentialRampToValueAtTime(targetFilter,end);
+  filter.Q.value=options.q??.8;
+  const volume=Math.max(.0001,options.vol??.025),attack=options.attack??.006;
+  gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(volume,start+attack);gain.gain.exponentialRampToValueAtTime(.0001,end);
+  source.connect(filter);filter.connect(gain);const routeNodes=routeAudio(gain,options.pan||0,options.wet??.08);
   registerAudioVoice(source,[filter,gain,...routeNodes],options.category||'effects',options.priority??1);
-  source.start(start);source.stop(start+dur+.03);
+  source.start(start,Math.random()*Math.max(.01,audioNoise.duration-dur));source.stop(end+.03);
 }
-function tone(freq,dur,type='sine',vol=.04,slide=0){
-  synthTone(freq,dur,{type,vol,endFreq:Math.max(28,freq+slide),wet:.12});
+function playDesignedSample(name,options={}){
+  if(!soundOn)return;
+  initAudio();if(!audio||audio.state==='suspended'||!audioBuffers[name])return;
+  const start=audio.currentTime+(options.delay||0),source=audio.createBufferSource(),filter=audio.createBiquadFilter(),gain=audio.createGain();
+  source.buffer=audioBuffers[name];source.playbackRate.setValueAtTime(options.rate??1,start);
+  filter.type=options.filterType||'lowpass';filter.frequency.value=options.filter??12000;filter.Q.value=options.q??.6;
+  const duration=source.buffer.duration/(options.rate??1),end=start+duration;
+  gain.gain.setValueAtTime(Math.max(.0001,options.vol??.025),start);gain.gain.exponentialRampToValueAtTime(.0001,end);
+  source.connect(filter);filter.connect(gain);const routeNodes=routeAudio(gain,options.pan||0,options.wet??.16);
+  registerAudioVoice(source,[filter,gain,...routeNodes],options.category||'effects',options.priority??1);
+  source.start(start);source.stop(end+.03);
 }
+function tone(freq,dur,type='sine',vol=.04,slide=0){synthTone(freq,dur,{type,vol,endFreq:Math.max(24,freq+slide),wet:.12})}
 function spatialAudioPosition(x,z,maxRange=1100){
   const dx=x-player.x,dz=z-player.z,distance=Math.hypot(dx,dz);
-  return{pan:clamp(dx/Math.max(260,maxRange*.72),-1,1),gain:clamp(1-distance/maxRange,.18,1),distance};
+  return{pan:clamp(dx/Math.max(260,maxRange*.72),-1,1),gain:clamp(1-distance/maxRange,.15,1),distance};
 }
-function swallowSound(r){
-  const scale=clamp(r/120,0,1),base=lerp(150,52,scale),volume=lerp(.025,.065,scale);
-  synthTone(base,.22+scale*.18,{type:'sine',vol:volume,endFreq:base*.55,filter:900,wet:.10});
-  synthTone(base*2.05,.13+scale*.08,{type:'triangle',vol:volume*.52,endFreq:base*1.28,delay:.012,filter:2200,wet:.18});
-  noiseBurst(.10+scale*.13,{vol:volume*.32,filter:lerp(1500,520,scale),q:.72,wet:.06});
+function playMaterialImpact(material,scale,volume,pan,priority,objectType){
+  const common={pan,priority,category:'effects'};
+  if(material==='paper'){
+    playDesignedSample('paper',{...common,vol:.018*volume,rate:rnd(.92,1.18),filter:7600,wet:.035});
+  }else if(material==='rubber'){
+    playDesignedSample('rubber',{...common,vol:(.026+scale*.016)*volume,rate:lerp(1.12,.78,scale),filter:1700,wet:.025});
+  }else if(material==='plastic'){
+    playDesignedSample('plastic',{...common,vol:(.022+scale*.020)*volume,rate:rnd(.86,1.10),filter:4200,wet:.045});
+  }else if(material==='wood'){
+    playDesignedSample('wood',{...common,vol:(.026+scale*.026)*volume,rate:lerp(1.08,.72,scale),filter:3300,wet:.07});
+  }else if(material==='foliage'){
+    playDesignedSample('foliage',{...common,vol:.026*volume,rate:rnd(.86,1.08),filter:6100,wet:.055});
+    playDesignedSample('wood',{...common,vol:.022*volume,rate:rnd(.78,.96),filter:2800,wet:.05,delay:.018});
+  }else if(material==='metal'||material==='vehicle'){
+    playDesignedSample('metalImpact',{...common,vol:(.025+scale*.036)*volume,rate:lerp(1.12,.68,scale),filter:6300,wet:.11});
+    playDesignedSample('metalScrape',{...common,vol:(.013+scale*.016)*volume,rate:rnd(.86,1.06),filter:4700,wet:.055,delay:.018});
+    if(material==='vehicle'){
+      playDesignedSample('rubber',{...common,vol:.013*volume,rate:.82,filter:1250,wet:.02,delay:.012});
+      if(Math.random()<.48)playDesignedSample('horn',{...common,vol:(.014+scale*.014)*volume,rate:rnd(.90,1.08),filter:4200,wet:.075,delay:.035});
+    }
+  }else if(material==='masonry'){
+    playDesignedSample('rock',{...common,vol:(.032+scale*.050)*volume,rate:lerp(1.05,.57,scale),filter:2200,wet:.07});
+  }else if(material==='structure'){
+    playDesignedSample('brick',{...common,vol:(.031+scale*.048)*volume,rate:lerp(1.07,.60,scale),filter:2700,wet:.08});
+    playDesignedSample('glass',{...common,vol:(.010+scale*.013)*volume,rate:rnd(.76,1.02),filter:9000,wet:.24,delay:.035});
+  }
+  if(scale>.34||material==='vehicle'||material==='masonry'||material==='structure'){
+    playDesignedSample('subImpact',{...common,vol:(.018+scale*.047)*volume,rate:lerp(1.08,.62,scale),filter:460,wet:.02});
+  }
+}
+function swallowSound(object){
+  if(!object)return;
+  const scale=clamp(object.radius/154,0,1),spatial=spatialAudioPosition(object.x,object.z,1450),pan=spatial.pan;
+  const priority=scale>.62?4:(scale>.3?3:1),now=audio?.currentTime??simulationClock;
+  const clustered=now-audioLastSwallow<.052;audioLastSwallow=now;audioSwallowCluster=clustered?audioSwallowCluster+1:0;
+  const material=OBJECT_MATERIAL[object.type]||'plastic';
+  const volume=spatial.gain*lerp(.68,1.08,scale);
+
+  // Air is tied to the opening and object cross-section, not to a musical
+  // pitch. Dense clusters share one whoosh so the mix remains believable.
+  if(!clustered||scale>.32){
+    noiseBurst(.14+scale*.34,{vol:(.018+scale*.034)*volume,startFilter:4300,endFilter:105+scale*120,filterType:'bandpass',q:.58,pan,wet:.045,priority});
+  }
+  playMaterialImpact(material,scale,volume,pan,priority,object.type);
+  if((object.type==='soccerBall'||object.type==='goal'||object.type==='scoreboard')&&Math.random()<.68){
+    playDesignedSample('whistle',{vol:.018*volume,rate:rnd(.93,1.08),filter:7200,pan,wet:.22,delay:.035,priority:3});
+  }
+  if(object.type==='stadium'){
+    playDesignedSample('chant',{vol:.038*volume,rate:rnd(.92,1.02),filter:3100,pan,wet:.26,delay:.08,priority:5,category:'music'});
+  }
 }
 function levelSound(){
-  const notes=[392,523.25,659.25,783.99];
-  notes.forEach((freq,index)=>synthTone(freq,.42,{type:index===0?'triangle':'sine',vol:.032-index*.003,delay:index*.065,endFreq:freq*1.006,filter:4200,wet:.34,pan:(index-1.5)*.12}));
-  synthTone(98,.52,{type:'sine',vol:.045,endFreq:73.5,filter:420,wet:.08});
+  noiseBurst(.78,{vol:.030,startFilter:170,endFilter:7200,filterType:'bandpass',q:.60,wet:.22,category:'music',priority:5});
+  playDesignedSample('subImpact',{vol:.068,rate:.68,filter:430,wet:.025,category:'music',priority:5});
+  playDesignedSample('metalImpact',{vol:.021,rate:1.08,filter:6500,delay:.055,wet:.12,category:'music',priority:5});
+  playDesignedSample('glass',{vol:.024,rate:.92,delay:.16,filter:10800,wet:.48,category:'music',priority:5});
 }
 function endSound(){
-  [293.66,246.94,196].forEach((freq,index)=>synthTone(freq,.36,{type:'triangle',vol:.03,delay:index*.11,endFreq:freq*.94,filter:2600,wet:.28}));
-  synthTone(65,.62,{type:'sine',vol:.045,endFreq:46,filter:360,wet:.08});
+  noiseBurst(1.10,{vol:.030,startFilter:3600,endFilter:70,filterType:'lowpass',q:.44,wet:.18,category:'music',priority:5});
+  playDesignedSample('subImpact',{vol:.075,rate:.54,filter:330,delay:.09,wet:.025,category:'music',priority:5});
+  playDesignedSample('masonry',{vol:.025,rate:.72,filter:1650,delay:.14,wet:.07,category:'music',priority:5});
+}
+function arcadeNote(freq,duration,options={}){
+  synthTone(freq,duration,{type:options.type||'square',vol:options.vol??.018,endFreq:options.endFreq??freq,delay:options.delay||0,pan:options.pan||0,filter:options.filter||7600,wet:options.wet??.18,category:options.category||'effects',priority:options.priority??3});
+}
+function locatorPing(type,spatial,mythic,volume){
+  const roots={vortex:220,overdrive:440,colossus:165,time:660,eventHorizon:110};
+  const root=roots[type]||440,pan=spatial.pan,category='locator',priority=mythic?4:2;
+  arcadeNote(root,.11,{vol:(mythic?.025:.016)*volume,pan,type:'square',filter:8200,wet:.18,category,priority});
+  arcadeNote(root*2,.09,{vol:(mythic?.020:.012)*volume,pan,type:'square',delay:.085,filter:9600,wet:.24,category,priority});
+  if(mythic)arcadeNote(root*3,.13,{vol:.016*volume,pan,type:'sawtooth',delay:.17,filter:9000,wet:.32,category,priority});
 }
 function powerDropSound(type,x,z,repeat=false){
   if(!soundOn)return;
   const def=POWER_DEFS[type],mythic=def.rarity==='mythic';
-  const spatial=spatialAudioPosition(x,z,mythic?1800:1250),v=spatial.gain*(repeat?.58:1);
-  const roots={vortex:220,overdrive:330,colossus:146.83,time:523.25,eventHorizon:73.42};
-  const root=roots[type]||330;
-  const audioClass={category:repeat?'locator':'effects',priority:mythic?4:(repeat?0:2)};
+  const spatial=spatialAudioPosition(x,z,mythic?2200:1700),volume=spatial.gain*(repeat?.72:1),pan=spatial.pan;
+  if(repeat){locatorPing(type,spatial,mythic,volume);return}
+  const roots={vortex:196,overdrive:392,colossus:147,time:587.33,eventHorizon:82.41};
+  const root=roots[type]||392,priority=mythic?6:4;
+  // Deliberately arcade-like: a clear drop arpeggio communicates the item tier
+  // while the stereo pan and minimap pulse communicate its world direction.
+  arcadeNote(root*2,.13,{vol:.021*volume,pan,type:'square',endFreq:root*1.65,filter:8200,wet:.18,priority});
+  arcadeNote(root*2.52,.12,{vol:.019*volume,pan,type:'square',delay:.10,filter:9000,wet:.22,priority});
+  arcadeNote(root*3,.14,{vol:.018*volume,pan,type:'triangle',delay:.20,filter:9800,wet:.28,priority});
   if(mythic){
-    synthTone(root,.72,{type:'sine',vol:.058*v,endFreq:root*.72,pan:spatial.pan,filter:520,wet:.20,...audioClass});
-    synthTone(root*4,.55,{type:'triangle',vol:.034*v,endFreq:root*6.7,delay:.04,pan:spatial.pan,filter:6200,wet:.42,...audioClass});
-    noiseBurst(.30,{vol:.018*v,filter:780,q:1.7,delay:.02,pan:spatial.pan,wet:.22,...audioClass});
-  }else{
-    synthTone(root,.28,{type:'triangle',vol:.030*v,endFreq:root*1.5,pan:spatial.pan,filter:3800,wet:.32,...audioClass});
-    synthTone(root*2,.34,{type:'sine',vol:.022*v,endFreq:root*2.52,delay:.055,pan:spatial.pan,filter:6400,wet:.40,...audioClass});
-    noiseBurst(.08,{vol:.009*v,filter:2100,delay:.015,pan:spatial.pan,wet:.14,...audioClass});
+    arcadeNote(root,.32,{vol:.035*volume,pan,type:'sawtooth',endFreq:root*2,filter:3600,wet:.34,priority:6});
+    arcadeNote(root*4,.20,{vol:.022*volume,pan,type:'square',delay:.30,filter:10500,wet:.45,priority:6});
   }
 }
+function powerSound(type){
+  if(!soundOn)return;
+  const roots={vortex:220,overdrive:440,colossus:164.81,time:659.25,eventHorizon:110};
+  const root=roots[type]||440,priority=type==='eventHorizon'?6:5;
+  const sequence=type==='vortex'?[1,1.5,2,3]:type==='overdrive'?[1,1.26,1.5,2]:type==='colossus'?[1,.75,1,2]:type==='time'?[1,1.25,1.5,2,3]:[1,1.5,2,3,4,6];
+  sequence.forEach((ratio,index)=>arcadeNote(root*ratio,.11+(index===sequence.length-1?.08:0),{
+    vol:(type==='eventHorizon'?.027:.021)*(1-index*.055),type:index%2?'square':'triangle',delay:index*.075,
+    endFreq:root*ratio*(index===sequence.length-1?1.08:1),filter:type==='eventHorizon'?9200:8200,wet:type==='eventHorizon'?.38:.22,priority
+  }));
+  if(type==='colossus'||type==='eventHorizon')playDesignedSample('subImpact',{vol:type==='eventHorizon'?.060:.035,rate:type==='eventHorizon'?.58:.78,filter:430,delay:.025,wet:.02,priority});
+}
 
+function uiConfirmSound(){
+  playDesignedSample('plastic',{vol:.013,rate:1.28,filter:5700,wet:.07,category:'ui',priority:4});
+  playDesignedSample('glass',{vol:.008,rate:1.36,filter:9800,wet:.24,delay:.025,category:'ui',priority:4});
+}
 function roadDistance(v){
   let m=((v%WORLD.roadGap)+WORLD.roadGap)%WORLD.roadGap;
   return Math.min(m,WORLD.roadGap-m);
@@ -1432,22 +1735,353 @@ function generateCity(){
   }
 }
 
+
+const RENEWAL_POOLS={
+  clutter:['paper','paper','paper','ball','soccerBall','cone'],
+  roadside:['mailbox','hydrant','bin','scooter','bench','streetlight','tree'],
+  traffic:['car','car','car','van','truck','bus'],
+  earlyStructures:['house','house','house','shop','fountain','statue'],
+  lateStructures:['house','shop','shop','apartment','apartment','tower','tower']
+};
+function compactDeadObjects(){
+  let write=0;
+  for(let i=0;i<objects.length;i++)if(!objects[i].dead)objects[write++]=objects[i];
+  objects.length=write;
+}
+function liveCityObjectCount(){
+  let count=0;
+  for(const o of objects)if(!o.dead&&!o.sinking)count++;
+  return count;
+}
+function renewalFarEnough(x,z){
+  const minimum=Math.max(CITY_RENEWAL.minPlayerDistance,player.r*2.4+420);
+  return Math.hypot(x-player.x,z-player.z)>=minimum;
+}
+function renewalPlacementClear(x,z,r,local,gap=14){
+  if(!Number.isFinite(x)||!Number.isFinite(z)||!renewalFarEnough(x,z))return false;
+  const nearby=querySpatial(x,z,r+190);
+  for(const o of nearby){
+    if(o.dead||o.sinking)continue;
+    const minimum=r+Math.max(4,o.collisionR)+gap;
+    if(dist2(x,z,o.x,o.z)<minimum*minimum)return false;
+  }
+  for(const q of local){
+    const minimum=r+q.r+gap;
+    if(dist2(x,z,q.x,q.z)<minimum*minimum)return false;
+  }
+  for(const p of powerups){
+    const minimum=r+48;
+    if(dist2(x,z,p.x,p.z)<minimum*minimum)return false;
+  }
+  return true;
+}
+function renewalLotPoint(type,local){
+  const radius=objectPlacementRadius(type);
+  for(let attempt=0;attempt<180;attempt++){
+    const x=rnd(-WORLD.w/2+radius+34,WORLD.w/2-radius-34);
+    const z=rnd(-WORLD.d/2+radius+34,WORLD.d/2-radius-34);
+    if(!clearOfRoads(x,z,radius)||!fixedSoccerClear(x,z,radius))continue;
+    if(!renewalPlacementClear(x,z,radius,local,18))continue;
+    const nearX=Math.round(x/WORLD.roadGap)*WORLD.roadGap;
+    const nearZ=Math.round(z/WORLD.roadGap)*WORLD.roadGap;
+    const dx=x-nearX,dz=z-nearZ;
+    const rot=Math.abs(dx)<Math.abs(dz)?(dx>0?-Math.PI/2:Math.PI/2):(dz>0?Math.PI:0);
+    return{x,z,rot,r:radius};
+  }
+  return null;
+}
+function renewalRoadPoint(type,local){
+  const dims=OBJECT_DIMS[type],radius=Math.max(dims[0],dims[2])*.58;
+  for(let attempt=0;attempt<180;attempt++){
+    const vertical=Math.random()<.5,dir=Math.random()<.5?-1:1,lane=WORLD.roadWidth*.23;
+    const laneAnchor=pick(vertical?roadX:roadZ)+(dir>0?-lane:lane);
+    const x=vertical?laneAnchor:rnd(-WORLD.w/2+110,WORLD.w/2-110);
+    const z=vertical?rnd(-WORLD.d/2+110,WORLD.d/2-110):laneAnchor;
+    if(distanceFromIntersectionAlong(vertical,x,z)<INTERSECTION_SPAWN_CLEAR)continue;
+    if(!renewalPlacementClear(x,z,radius,local,24))continue;
+    return{x,z,vertical,dir,laneAnchor,r:radius};
+  }
+  return null;
+}
+function renewalRoadsidePoint(type,local){
+  const dims=OBJECT_DIMS[type],radius=Math.max(8,Math.hypot(dims[0],dims[2])*.30);
+  for(let attempt=0;attempt<180;attempt++){
+    const vertical=Math.random()<.5,side=Math.random()<.5?-1:1;
+    const edge=WORLD.roadWidth/2+rnd(12,24);
+    let x,z,rot;
+    if(vertical){const line=pick(roadX);x=line+side*edge;z=rnd(-WORLD.d/2+28,WORLD.d/2-28);rot=side>0?-Math.PI/2:Math.PI/2}
+    else{const line=pick(roadZ);x=rnd(-WORLD.w/2+28,WORLD.w/2-28);z=line+side*edge;rot=side>0?Math.PI:0}
+    if(distanceFromIntersectionAlong(vertical,x,z)<88+radius)continue;
+    if(!fixedSoccerClear(x,z,radius)||!renewalPlacementClear(x,z,radius,local,17))continue;
+    return{x,z,rot,r:radius};
+  }
+  return null;
+}
+function renewalClutterPoint(type,local){
+  const radius=Math.max(5,TYPE[type].radius*.75);
+  for(let attempt=0;attempt<140;attempt++){
+    const useRoad=Math.random()<.34;
+    let x,z,rot=rnd(0,TAU);
+    if(useRoad){
+      const vertical=Math.random()<.5;
+      if(vertical){x=pick(roadX)+rnd(-WORLD.roadWidth*.34,WORLD.roadWidth*.34);z=rnd(-WORLD.d/2+30,WORLD.d/2-30)}
+      else{x=rnd(-WORLD.w/2+30,WORLD.w/2-30);z=pick(roadZ)+rnd(-WORLD.roadWidth*.34,WORLD.roadWidth*.34)}
+    }else{
+      x=rnd(-WORLD.w/2+40,WORLD.w/2-40);z=rnd(-WORLD.d/2+40,WORLD.d/2-40);
+      if(!clearOfRoads(x,z,radius))continue;
+    }
+    if(!fixedSoccerClear(x,z,radius)||!renewalPlacementClear(x,z,radius,local,8))continue;
+    return{x,z,rot,r:radius};
+  }
+  return null;
+}
+function renewCity(){
+  if(objects.length>CITY_RENEWAL.maxObjects)compactDeadObjects();
+  const alive=liveCityObjectCount();
+  const target=Math.min(CITY_RENEWAL.targetMax,CITY_RENEWAL.targetBase+level*CITY_RENEWAL.targetPerLevel);
+  if(alive>=target*CITY_RENEWAL.triggerRatio)return 0;
+
+  rebuildSpatialGrid();
+  const needed=Math.min(CITY_RENEWAL.maxBatch,target-alive);
+  const local=[];
+  let added=0;
+  const progress=level/(LEVEL_COUNT-1);
+  for(let attempt=0;attempt<needed*10&&added<needed;attempt++){
+    const roll=Math.random();
+    let category;
+    if(roll<.25-progress*.08)category='clutter';
+    else if(roll<.48-progress*.05)category='roadside';
+    else if(roll<.70)category='traffic';
+    else category='structure';
+
+    let type,point,extra={};
+    if(category==='traffic'){
+      type=pick(RENEWAL_POOLS.traffic);
+      point=renewalRoadPoint(type,local);
+      if(point){
+        const ranges={car:[42,68],van:[36,58],truck:[29,47],bus:[28,44]},speed=ranges[type];
+        extra={moving:true,vertical:point.vertical,dir:point.dir,laneAnchor:point.laneAnchor,speed:rnd(speed[0],speed[1])};
+      }
+    }else if(category==='roadside'){
+      type=pick(RENEWAL_POOLS.roadside);point=renewalRoadsidePoint(type,local);
+    }else if(category==='structure'){
+      type=pick(progress>.42?RENEWAL_POOLS.lateStructures:RENEWAL_POOLS.earlyStructures);point=renewalLotPoint(type,local);
+    }else{
+      type=pick(RENEWAL_POOLS.clutter);point=renewalClutterPoint(type,local);
+    }
+    if(!point)continue;
+    const object=addObject(type,point.x,point.z,{rot:point.rot??rnd(0,TAU),...extra});
+    if(!object)continue;
+    local.push({x:point.x,z:point.z,r:point.r||object.collisionR});
+    added++;
+  }
+  if(added){
+    cityGeneration++;
+    mapDirty=true;
+  }
+  return added;
+}
+function updateCityRenewal(dt){
+  cityRenewalTimer-=dt;
+  if(cityRenewalTimer>0)return;
+  cityRenewalTimer=CITY_RENEWAL.checkEvery;
+  renewCity();
+}
+
+function resetSportsFeatures(){
+  SOCCER_FIELDS.length=0;SOCCER_STADIUMS.length=0;
+  for(const field of INITIAL_SOCCER_FIELDS)SOCCER_FIELDS.push({...field});
+  for(const stadium of INITIAL_SOCCER_STADIUMS)SOCCER_STADIUMS.push({...stadium});
+}
+function populateStreamSoccerField(field){
+  for(const side of [-1,1]){
+    const p=fieldPoint(field,side*(FIELD.w/2-5),0);
+    addObject('goal',p.x,p.z,{rot:field.rot+(side>0?Math.PI:0)});
+  }
+  for(const sx of [-1,1])for(const sz of [-1,1]){
+    const p=fieldPoint(field,sx*(FIELD.w/2-7),sz*(FIELD.d/2-7));
+    addObject('cornerFlag',p.x,p.z,{rot:field.rot});
+  }
+  for(const [lx,lz] of [[-45,-24],[-12,-9],[16,13],[42,25],[-25,30],[28,-31],[0,0]]){
+    const p=fieldPoint(field,lx,lz);addObject('soccerBall',p.x,p.z);
+  }
+  for(let i=-2;i<=2;i++){const p=fieldPoint(field,i*15,-FIELD.d*.34);addObject('cone',p.x,p.z,{rot:field.rot})}
+  for(const side of [-1,1]){const p=fieldPoint(field,0,side*(FIELD.d/2+43));addObject('bleachers',p.x,p.z,{rot:field.rot+(side<0?Math.PI:0)})}
+  const board=fieldPoint(field,FIELD.w*.28,FIELD.d/2+42);addObject('scoreboard',board.x,board.z,{rot:field.rot});
+}
+function randomBandValue(min,max){return min+Math.random()*(max-min)}
+function roadChoices(values,min,max,padding=0){return values.filter(value=>value>=min-padding&&value<=max+padding)}
+function streamPlacementClear(x,z,r,local,gap=14){
+  if(Math.hypot(x-player.x,z-player.z)<Math.max(760,player.r*2.1+300))return false;
+  const nearby=querySpatial(x,z,r+190);
+  for(const object of nearby){
+    if(object.dead||object.sinking)continue;
+    const minimum=r+Math.max(4,object.collisionR)+gap;
+    if(dist2(x,z,object.x,object.z)<minimum*minimum)return false;
+  }
+  for(const q of local){const minimum=r+q.r+gap;if(dist2(x,z,q.x,q.z)<minimum*minimum)return false}
+  return true;
+}
+function streamPointFor(category,type,bounds,local){
+  const radius=objectPlacementRadius(type);
+  for(let attempt=0;attempt<150;attempt++){
+    let x,z,rot=rnd(0,TAU),extra={};
+    if(category==='traffic'){
+      const vertical=Math.random()<.5,dir=Math.random()<.5?-1:1,lane=WORLD.roadWidth*.23;
+      const lines=roadChoices(vertical?roadX:roadZ,vertical?bounds.x0:bounds.z0,vertical?bounds.x1:bounds.z1,10);
+      if(!lines.length)continue;
+      const laneAnchor=pick(lines)+(dir>0?-lane:lane);
+      x=vertical?laneAnchor:randomBandValue(bounds.x0,bounds.x1);
+      z=vertical?randomBandValue(bounds.z0,bounds.z1):laneAnchor;
+      if(distanceFromIntersectionAlong(vertical,x,z)<INTERSECTION_SPAWN_CLEAR)continue;
+      const ranges={car:[42,68],van:[36,58],truck:[29,47],bus:[28,44]},speed=ranges[type];
+      extra={moving:true,vertical,dir,laneAnchor,speed:rnd(speed[0],speed[1])};rot=vertical?(dir>0?0:Math.PI):(dir>0?Math.PI/2:-Math.PI/2);
+    }else if(category==='roadside'){
+      const vertical=Math.random()<.5,side=Math.random()<.5?-1:1,edge=WORLD.roadWidth/2+rnd(12,24);
+      const lines=roadChoices(vertical?roadX:roadZ,vertical?bounds.x0:bounds.z0,vertical?bounds.x1:bounds.z1,10);
+      if(!lines.length)continue;
+      if(vertical){x=pick(lines)+side*edge;z=randomBandValue(bounds.z0,bounds.z1);rot=side>0?-Math.PI/2:Math.PI/2}
+      else{x=randomBandValue(bounds.x0,bounds.x1);z=pick(lines)+side*edge;rot=side>0?Math.PI:0}
+      if(distanceFromIntersectionAlong(vertical,x,z)<88+radius)continue;
+      if(!fixedSoccerClear(x,z,radius))continue;
+    }else if(category==='structure'){
+      x=randomBandValue(bounds.x0+radius+12,bounds.x1-radius-12);z=randomBandValue(bounds.z0+radius+12,bounds.z1-radius-12);
+      if(!clearOfRoads(x,z,radius)||!fixedSoccerClear(x,z,radius))continue;
+      const nearX=Math.round(x/WORLD.roadGap)*WORLD.roadGap,nearZ=Math.round(z/WORLD.roadGap)*WORLD.roadGap;
+      const dx=x-nearX,dz=z-nearZ;rot=Math.abs(dx)<Math.abs(dz)?(dx>0?-Math.PI/2:Math.PI/2):(dz>0?Math.PI:0);
+    }else{
+      const onRoad=Math.random()<.34;
+      if(onRoad){
+        const vertical=Math.random()<.5,lines=roadChoices(vertical?roadX:roadZ,vertical?bounds.x0:bounds.z0,vertical?bounds.x1:bounds.z1,10);
+        if(!lines.length)continue;
+        if(vertical){x=pick(lines)+rnd(-WORLD.roadWidth*.34,WORLD.roadWidth*.34);z=randomBandValue(bounds.z0,bounds.z1)}
+        else{x=randomBandValue(bounds.x0,bounds.x1);z=pick(lines)+rnd(-WORLD.roadWidth*.34,WORLD.roadWidth*.34)}
+      }else{x=randomBandValue(bounds.x0+20,bounds.x1-20);z=randomBandValue(bounds.z0+20,bounds.z1-20);if(!clearOfRoads(x,z,radius))continue}
+      if(!fixedSoccerClear(x,z,radius))continue;
+    }
+    if(!Number.isFinite(x)||!Number.isFinite(z)||!streamPlacementClear(x,z,radius,local,category==='structure'?20:10))continue;
+    return{x,z,rot,extra,r:radius};
+  }
+  return null;
+}
+function spawnStreamBand(bounds,count){
+  const capacity=Math.max(0,CITY_RENEWAL.maxObjects-48-liveCityObjectCount());
+  count=Math.min(count,capacity);
+  if(count<=0)return 0;
+  rebuildSpatialGrid();
+  const local=[];let added=0,progress=level/(LEVEL_COUNT-1);
+  for(let attempt=0;attempt<count*12&&added<count;attempt++){
+    const roll=Math.random();let category,type;
+    if(roll<.23-progress*.06){category='clutter';type=pick(RENEWAL_POOLS.clutter)}
+    else if(roll<.47-progress*.04){category='roadside';type=pick(RENEWAL_POOLS.roadside)}
+    else if(roll<.71){category='traffic';type=pick(RENEWAL_POOLS.traffic)}
+    else{category='structure';type=pick(progress>.42?RENEWAL_POOLS.lateStructures:RENEWAL_POOLS.earlyStructures)}
+    const point=streamPointFor(category,type,bounds,local);if(!point)continue;
+    const object=addObject(type,point.x,point.z,{rot:point.rot,...point.extra});if(!object)continue;
+    local.push({x:point.x,z:point.z,r:point.r});added++;
+  }
+  return added;
+}
+function featurePointInBand(bounds,radius){
+  for(let attempt=0;attempt<80;attempt++){
+    const cellX=Math.floor(randomBandValue(bounds.x0,bounds.x1)/WORLD.roadGap)*WORLD.roadGap+WORLD.roadGap/2;
+    const cellZ=Math.floor(randomBandValue(bounds.z0,bounds.z1)/WORLD.roadGap)*WORLD.roadGap+WORLD.roadGap/2;
+    if(cellX<bounds.x0+radius||cellX>bounds.x1-radius||cellZ<bounds.z0+radius||cellZ>bounds.z1-radius)continue;
+    if(Math.hypot(cellX-player.x,cellZ-player.z)<1100)continue;
+    if(inSoccerArea(cellX,cellZ,radius*.35))continue;
+    const nearby=querySpatial(cellX,cellZ,radius);
+    if(nearby.some(object=>!object.dead&&!object.sinking&&Math.hypot(object.x-cellX,object.z-cellZ)<radius+object.collisionR))continue;
+    return{x:cellX,z:cellZ};
+  }
+  return null;
+}
+function maintainStreamSports(bands){
+  const fallback=[
+    {x0:-WORLD.w/2,x1:-WORLD.w/2+WORLD.roadGap*2.8,z0:-WORLD.d/2,z1:WORLD.d/2},
+    {x0:WORLD.w/2-WORLD.roadGap*2.8,x1:WORLD.w/2,z0:-WORLD.d/2,z1:WORLD.d/2},
+    {x0:-WORLD.w/2,x1:WORLD.w/2,z0:-WORLD.d/2,z1:-WORLD.d/2+WORLD.roadGap*2.4},
+    {x0:-WORLD.w/2,x1:WORLD.w/2,z0:WORLD.d/2-WORLD.roadGap*2.4,z1:WORLD.d/2}
+  ];
+  const searchBands=[...bands,...fallback];
+  let guard=0;
+  while(SOCCER_FIELDS.length<INFINITE_CITY.fieldTarget&&guard++<searchBands.length*2){
+    const bounds=searchBands[guard%searchBands.length];rebuildSpatialGrid();const point=featurePointInBand(bounds,250);
+    if(!point)continue;
+    const field={x:point.x,z:point.z,rot:Math.random()<.5?0:Math.PI/2};SOCCER_FIELDS.push(field);populateStreamSoccerField(field);
+  }
+  guard=0;
+  while(SOCCER_STADIUMS.length<INFINITE_CITY.stadiumTarget&&guard++<searchBands.length*2){
+    const bounds=searchBands[(guard+1)%searchBands.length];rebuildSpatialGrid();const point=featurePointInBand(bounds,290);
+    if(!point)continue;
+    const stadium={x:point.x,z:point.z,rot:pick([0,Math.PI/2,Math.PI,-Math.PI/2])};SOCCER_STADIUMS.push(stadium);addObject('stadium',stadium.x,stadium.z,{rot:stadium.rot});
+    for(let i=0;i<5;i++){const a=i/5*TAU;addObject('soccerBall',stadium.x+Math.cos(a)*218,stadium.z+Math.sin(a)*218)}
+  }
+}
+function cullStreamedWorld(){
+  const xLimit=WORLD.w/2+INFINITE_CITY.cullMargin,zLimit=WORLD.d/2+INFINITE_CITY.cullMargin;
+  let write=0;
+  for(let i=0;i<objects.length;i++){
+    const object=objects[i];
+    if(object.dead)continue;
+    if(Math.abs(object.x)>xLimit||Math.abs(object.z)>zLimit)continue;
+    objects[write++]=object;
+  }
+  objects.length=write;
+  write=0;for(let i=0;i<powerups.length;i++){const p=powerups[i];if(Math.abs(p.x)<=xLimit&&Math.abs(p.z)<=zLimit)powerups[write++]=p}powerups.length=write;
+  write=0;for(let i=0;i<particles.length;i++){const p=particles[i];if(Math.abs(p.x)<=xLimit&&Math.abs(p.z)<=zLimit)particles[write++]=p}particles.length=write;
+  for(let i=SOCCER_FIELDS.length-1;i>=0;i--){const field=SOCCER_FIELDS[i];if(Math.abs(field.x)>xLimit+320||Math.abs(field.z)>zLimit+320){SOCCER_MESH_CACHE.delete(field);SOCCER_FIELDS.splice(i,1)}}
+  for(let i=SOCCER_STADIUMS.length-1;i>=0;i--){const stadium=SOCCER_STADIUMS[i];if(Math.abs(stadium.x)>xLimit+360||Math.abs(stadium.z)>zLimit+360)SOCCER_STADIUMS.splice(i,1)}
+}
+function rebaseInfiniteWorld(rebaseX,rebaseZ){
+  if(!rebaseX&&!rebaseZ)return;
+  const shiftX=-rebaseX,shiftZ=-rebaseZ;
+  worldTravelX+=rebaseX;worldTravelZ+=rebaseZ;streamGeneration++;
+  player.x+=shiftX;player.z+=shiftZ;
+  camera.x+=shiftX;camera.z+=shiftZ;camera.lookX+=shiftX;camera.lookZ+=shiftZ;
+  startPlaza.x+=shiftX;startPlaza.z+=shiftZ;
+  if(Math.abs(startPlaza.x)>WORLD.w||Math.abs(startPlaza.z)>WORLD.d)startPlaza.active=false;
+  for(const object of objects){object.x+=shiftX;object.z+=shiftZ;if(object.moving){if(object.vertical)object.laneAnchor+=shiftX;else object.laneAnchor+=shiftZ}}
+  for(const power of powerups){power.x+=shiftX;power.z+=shiftZ}
+  for(const particle of particles){particle.x+=shiftX;particle.z+=shiftZ}
+  for(const field of SOCCER_FIELDS){SOCCER_MESH_CACHE.delete(field);field.x+=shiftX;field.z+=shiftZ;field.renderLod=-1}
+  for(const stadium of SOCCER_STADIUMS){stadium.x+=shiftX;stadium.z+=shiftZ}
+  cullStreamedWorld();rebuildSpatialGrid();
+  const bands=[];
+  if(rebaseX){const width=Math.min(WORLD.w*.42,Math.abs(rebaseX)+INFINITE_CITY.streamOverlap);bands.push(rebaseX>0?{x0:WORLD.w/2-width,x1:WORLD.w/2,z0:-WORLD.d/2,z1:WORLD.d/2}:{x0:-WORLD.w/2,x1:-WORLD.w/2+width,z0:-WORLD.d/2,z1:WORLD.d/2})}
+  if(rebaseZ){const depth=Math.min(WORLD.d*.42,Math.abs(rebaseZ)+INFINITE_CITY.streamOverlap);bands.push(rebaseZ>0?{x0:-WORLD.w/2,x1:WORLD.w/2,z0:WORLD.d/2-depth,z1:WORLD.d/2}:{x0:-WORLD.w/2,x1:WORLD.w/2,z0:-WORLD.d/2,z1:-WORLD.d/2+depth})}
+  // Reserve major sports districts before filling the exposed bands. Ordinary
+  // street generation then respects those footprints instead of crowding them out.
+  maintainStreamSports(bands);
+  for(const bounds of bands){const area=Math.max(1,(bounds.x1-bounds.x0)*(bounds.z1-bounds.z0));const count=clamp(Math.round(area/INFINITE_CITY.densityAreaPerObject),INFINITE_CITY.minimumBandObjects,INFINITE_CITY.maximumBandObjects);spawnStreamBand(bounds,count)}
+  cityGeneration++;mapDirty=true;lastMapDraw=-Infinity;
+}
+function updateInfiniteCityStreaming(){
+  let rebaseX=0,rebaseZ=0;
+  if(Math.abs(player.x)>INFINITE_CITY.rebaseThreshold)rebaseX=Math.trunc(player.x/WORLD.roadGap)*WORLD.roadGap;
+  if(Math.abs(player.z)>INFINITE_CITY.rebaseThreshold)rebaseZ=Math.trunc(player.z/WORLD.roadGap)*WORLD.roadGap;
+  if(rebaseX||rebaseZ)rebaseInfiniteWorld(rebaseX,rebaseZ);
+}
+
 function resetGame(){
   score=0;mass=0;level=0;timeLeft=RUN_DURATION;combo=0;comboTime=0;toastTime=0;
   blockedPulse=0;holePulse=0;runEaten=0;ripples=[];simulationClock=0;
-  powerups=[];nextPowerId=1;powerSpawnTimer=8.5;powerHudSignature='';
+  powerups=[];nextPowerId=1;powerSpawnTimer=4.5;powerHudSignature='';
+  cityRenewalTimer=CITY_RENEWAL.checkEvery;cityGeneration=0;
+  worldTravelX=0;worldTravelZ=0;streamGeneration=0;startPlaza.x=SPAWN.x;startPlaza.z=SPAWN.z;startPlaza.active=true;
+  stadiumAmbienceTimer=4.5;trafficHornTimer=3.2;resetSportsFeatures();
   regularSpawnsSinceMythic=0;lastMythicSpawn=-999;
   activePowers.vortex=0;activePowers.overdrive=0;activePowers.colossus=0;activePowers.eventHorizon=0;
   powerHud.innerHTML='';
   for(const key of Object.keys(hudCache))hudCache[key]=key==='low'?null:'';
   mapDirty=true;lastMapDraw=-Infinity;
+  input.x=0;input.z=0;input.active=false;input.source='none';input.keys.clear();
   player={x:SPAWN.x,z:SPAWN.z,r:LEVELS[0].r,vx:0,vz:0};
   camera={x:SPAWN.x,y:330,z:SPAWN.z+455,lookX:SPAWN.x,lookZ:SPAWN.z-35};
   generateCity();updateHUD(true);drawMinimap(true);
 }
 function startGame(){
   initAudio();if(audio&&audio.state==='suspended')audio.resume().catch(()=>{});
-  resetGame();state='playing';last=performance.now();accumulator=0;
+  resetGame();state='playing';last=performance.now();accumulator=0;uiConfirmSound();
   $('startScreen').classList.add('hidden');
   $('pauseScreen').classList.add('hidden');
   $('endScreen').classList.add('hidden');
@@ -1458,7 +2092,7 @@ function startGame(){
 function pauseGame(){
   if(state!=='playing')return;
   stopTouch();input.keys.clear();player.vx=0;player.vz=0;
-  state='paused';$('pauseScreen').classList.remove('hidden');
+  state='paused';silenceAdaptiveAudio(.05);$('pauseScreen').classList.remove('hidden');
 }
 function resumeGame(){
   if(state!=='paused')return;
@@ -1473,7 +2107,7 @@ function endGame(){
   $('finalSize').textContent=(player.r/LEVELS[0].r).toFixed(1)+'×';
   $('finalBest').textContent=best.toLocaleString();
   $('endScreen').classList.remove('hidden');
-  endSound();
+  silenceAdaptiveAudio(.08);endSound();
 }
 function updateHUD(force=false){
   const scoreText=score.toLocaleString();
@@ -1521,7 +2155,7 @@ function awardObject(o){
   const gained=Math.round(o.score*multiplier);
   score+=gained;mass+=o.mass;runEaten++;
   holePulse=1;
-  swallowSound(o.radius);
+  swallowSound(o);
   scorePopup(gained,mythic?'MYTHIC':(combo>2?'COMBO':''));
   addParticles(o.x,o.z,['#f2dd74','#70e4bb','#78b9ff','#c693ff'][o.variant],Math.min(18,5+(o.radius/8|0)),Math.min(1.55,.72+o.radius/110));
   ripples.push({r:player.r*.70,life:.52,max:.52,color:combo>=5?'gold':'purple'});
@@ -1563,27 +2197,28 @@ function swallow(o){
 
 function powerSound(type){
   if(!soundOn)return;
+  const priority=type==='eventHorizon'?6:4;
   if(type==='vortex'){
-    synthTone(132,.48,{type:'sine',vol:.052,endFreq:78,filter:620,wet:.18});
-    synthTone(396,.44,{type:'triangle',vol:.032,endFreq:690,delay:.035,filter:4300,wet:.38});
-    noiseBurst(.18,{vol:.014,filter:760,q:1.4,wet:.18});
+    noiseBurst(.92,{vol:.038,startFilter:5200,endFilter:78,filterType:'bandpass',q:.62,wet:.16,priority});
+    playDesignedSample('subImpact',{vol:.045,rate:.70,filter:360,wet:.025,priority});
   }else if(type==='overdrive'){
-    synthTone(246.94,.30,{type:'sawtooth',vol:.028,endFreq:987.77,filter:5200,wet:.18});
-    synthTone(493.88,.38,{type:'triangle',vol:.034,endFreq:987.77,delay:.055,pan:.12,filter:6800,wet:.34});
-    noiseBurst(.10,{vol:.012,filter:2800,q:1.2,wet:.08});
+    noiseBurst(.72,{vol:.032,startFilter:220,endFilter:8700,filterType:'bandpass',q:.68,wet:.10,priority});
+    playDesignedSample('metalScrape',{vol:.018,rate:1.34,filter:7200,delay:.045,wet:.06,priority});
+    playDesignedSample('subImpact',{vol:.020,rate:1.12,filter:520,wet:.015,priority});
   }else if(type==='colossus'){
-    synthTone(61.74,.58,{type:'sine',vol:.068,endFreq:46.25,filter:380,wet:.08});
-    synthTone(123.47,.48,{type:'triangle',vol:.038,endFreq:185,delay:.06,filter:1700,wet:.24});
-    noiseBurst(.22,{vol:.020,filter:480,q:.7,wet:.10});
+    playDesignedSample('subImpact',{vol:.078,rate:.58,filter:320,wet:.02,priority});
+    playDesignedSample('masonry',{vol:.043,rate:.62,filter:1750,delay:.025,wet:.075,priority});
   }else if(type==='eventHorizon'){
-    synthTone(43.65,.92,{type:'sine',vol:.078,endFreq:32.7,filter:280,wet:.12});
-    synthTone(174.61,.72,{type:'sawtooth',vol:.030,endFreq:698.46,delay:.06,filter:3900,wet:.40});
-    synthTone(1046.5,.62,{type:'sine',vol:.028,endFreq:1568,delay:.19,pan:.18,filter:9000,wet:.52});
-    noiseBurst(.40,{vol:.020,filter:640,q:1.1,delay:.02,wet:.28});
+    noiseBurst(1.34,{vol:.047,startFilter:7600,endFilter:52,filterType:'bandpass',q:.74,wet:.23,priority:6});
+    playDesignedSample('subImpact',{vol:.098,rate:.47,filter:260,delay:.045,wet:.035,priority:6});
+    playDesignedSample('metalScrape',{vol:.018,rate:.64,filter:4200,delay:.16,wet:.14,priority:6});
+    playDesignedSample('glass',{vol:.025,rate:.57,filter:8500,delay:.26,wet:.48,priority:6});
   }else{
-    [659.25,880,1174.66].forEach((freq,index)=>synthTone(freq,.34,{type:'sine',vol:.027-index*.003,delay:index*.055,pan:(index-1)*.12,filter:8500,wet:.46}));
+    playDesignedSample('glass',{vol:.044,rate:1.08,filter:11800,wet:.52,priority});
+    noiseBurst(.34,{vol:.015,startFilter:1200,endFilter:9800,filterType:'bandpass',q:.74,wet:.25,priority});
   }
 }
+
 function updatePowerHud(force=false){
   const active=Object.entries(activePowers).filter(([,time])=>time>0);
   const signature=active.map(([type,time])=>type+':'+Math.ceil(time*10)).join('|');
@@ -1596,20 +2231,19 @@ function updatePowerHud(force=false){
   }).join('');
 }
 function powerSpawnClear(x,z){
-  if(Math.hypot(x-player.x,z-player.z)<300)return false;
+  const minimumDistance=Math.max(360,player.r+180);
+  if(Math.hypot(x-player.x,z-player.z)<minimumDistance)return false;
+  if(!fixedSoccerClear(x,z,18))return false;
   if(!placementClearObjects(x,z,28,30))return false;
-  for(const p of powerups)if(Math.hypot(x-p.x,z-p.z)<110)return false;
+  for(const p of powerups)if(Math.hypot(x-p.x,z-p.z)<150)return false;
   return true;
 }
 function findPowerSpawn(){
-  for(let attempt=0;attempt<90;attempt++){
-    const angle=rnd(0,TAU),distance=rnd(420,840);
-    const x=clamp(player.x+Math.cos(angle)*distance,-WORLD.w/2+100,WORLD.w/2-100);
-    const z=clamp(player.z+Math.sin(angle)*distance,-WORLD.d/2+100,WORLD.d/2-100);
-    if(powerSpawnClear(x,z))return{x,z};
-  }
-  for(let attempt=0;attempt<80;attempt++){
-    const x=rnd(-WORLD.w/2+120,WORLD.w/2-120),z=rnd(-WORLD.d/2+120,WORLD.d/2-120);
+  // Power drops are true world events: choose from the entire city instead of
+  // orbiting the player. The minimap ping and directional sound guide travel.
+  for(let attempt=0;attempt<220;attempt++){
+    const x=rnd(-WORLD.w/2+140,WORLD.w/2-140);
+    const z=rnd(-WORLD.d/2+140,WORLD.d/2-140);
     if(powerSpawnClear(x,z))return{x,z};
   }
   return null;
@@ -1622,7 +2256,7 @@ function choosePowerType(){
   // Mythic drops are intentionally independent of ordinary rotation. They
   // cannot appear in the opening seconds or back-to-back, while a soft pity
   // increase prevents them from becoming effectively invisible across runs.
-  const mythicReady=simulationClock>32&&simulationClock-lastMythicSpawn>58;
+  const mythicReady=simulationClock>24&&simulationClock-lastMythicSpawn>44;
   choices=choices.filter(type=>type!=='eventHorizon'||mythicReady);
   if(!choices.length)choices=POWER_TYPES.filter(type=>type!=='eventHorizon');
 
@@ -1641,12 +2275,12 @@ function choosePowerType(){
   return choices[choices.length-1];
 }
 function spawnPowerup(){
-  if(powerups.length>=2)return false;
+  if(powerups.length>=4)return false;
   const point=findPowerSpawn();
   if(!point)return false;
   const type=choosePowerType();
   const mythic=POWER_DEFS[type].rarity==='mythic';
-  powerups.push({id:nextPowerId++,type,x:point.x,z:point.z,age:0,life:mythic?30:24,spin:rnd(0,TAU),pingPulse:0,beaconTimer:mythic?4.8:7.2});
+  powerups.push({id:nextPowerId++,type,x:point.x,z:point.z,age:0,life:mythic?55:42,spin:rnd(0,TAU),pingPulse:0,beaconTimer:mythic?4.8:7.2});
   powerDropSound(type,point.x,point.z,false);
   if(mythic){lastMythicSpawn=simulationClock;regularSpawnsSinceMythic=0}
   else regularSpawnsSinceMythic++;
@@ -1655,11 +2289,11 @@ function spawnPowerup(){
 function activatePower(type,x,z){
   const def=POWER_DEFS[type];
   if(type==='time'){
-    timeLeft=Math.min(MAX_RUN_TIME,timeLeft+12);
-    showToast(`${def.icon} ${def.name}  +12s`);
+    timeLeft=Math.min(MAX_RUN_TIME,timeLeft+18);
+    showToast(`${def.icon} ${def.name}  +18s`);
   }else{
     const current=activePowers[type]||0;
-    activePowers[type]=Math.min(def.duration*1.65,current>0?current+def.duration*.62:def.duration);
+    activePowers[type]=Math.min(def.duration*2.25,current>0?current+def.duration*.78:def.duration);
     if(type==='eventHorizon'){
       showToast(`${def.icon} ${def.name}  —  MYTHIC`);
       toastTime=1.55;
@@ -1676,8 +2310,8 @@ function updatePowerups(dt){
   for(const type of ['vortex','overdrive','colossus','eventHorizon'])activePowers[type]=Math.max(0,activePowers[type]-dt);
   powerSpawnTimer-=dt;
   if(powerSpawnTimer<=0){
-    if(spawnPowerup())powerSpawnTimer=rnd(15,23);
-    else powerSpawnTimer=4;
+    if(spawnPowerup())powerSpawnTimer=rnd(7,11);
+    else powerSpawnTimer=2.5;
   }
   for(const p of powerups){
     p.age+=dt;p.life-=dt;p.spin+=dt*(p.type==='overdrive'?2.8:(p.type==='eventHorizon'?2.25:1.65));
@@ -1733,10 +2367,10 @@ function updateInput(dt){
   let magnitude=Math.hypot(x,z);
   if(magnitude>0){
     x/=magnitude;z/=magnitude;
-    // A larger dead zone and progressive response give touch users precise
-    // low-speed control instead of jumping immediately to cruising speed.
-    magnitude=clamp((magnitude-.075)/.925,0,1);
-    magnitude=Math.pow(magnitude,1.18);
+    // Touch input is already normalized by the joystick. Keyboard and mouse
+    // naturally arrive at full strength, so no second dead zone or curve is
+    // applied here.
+    magnitude=clamp(magnitude,0,1);
   }
 
   const rush=1+Math.min(combo,10)*.012;
@@ -1748,21 +2382,22 @@ function updateInput(dt){
   const currentSpeed=Math.hypot(player.vx,player.vz);
   const reversing=currentSpeed>5&&(player.vx*targetX+player.vz*targetZ)<0;
   const steeringBoost=Math.max(activePowers.eventHorizon>0?1.34:1,activePowers.overdrive>0?1.42:1);
-  const steeringRate=(reversing?52:36)*steeringBoost;
+  const touchControl=input.source==='touch';
+  const steeringRate=(reversing?60:(touchControl?46:40))*steeringBoost;
   const response=1-Math.exp(-steeringRate*dt);
   player.vx=lerp(player.vx,targetX,response);
   player.vz=lerp(player.vz,targetZ,response);
 
   if(magnitude===0){
-    const stop=1-Math.exp(-(activePowers.overdrive>0?78:62)*dt);
+    const stop=1-Math.exp(-(activePowers.overdrive>0?88:(touchControl?78:68))*dt);
     player.vx=lerp(player.vx,0,stop);
     player.vz=lerp(player.vz,0,stop);
     if(Math.hypot(player.vx,player.vz)<1.2){player.vx=0;player.vz=0}
   }
 
-  const edgeReach=player.r+EDGE_REACH_ALLOWANCE;
-  player.x=clamp(player.x+player.vx*dt,-WORLD.w/2-edgeReach,WORLD.w/2+edgeReach);
-  player.z=clamp(player.z+player.vz*dt,-WORLD.d/2-edgeReach,WORLD.d/2+edgeReach);
+  player.x+=player.vx*dt;
+  player.z+=player.vz*dt;
+  updateInfiniteCityStreaming();
 }
 
 
@@ -2301,6 +2936,30 @@ function updateCamera(dt){
   camera.lookX=lerp(camera.lookX,player.x+nx*lookAhead,1-Math.exp(-9.4*dt));
   camera.lookZ=lerp(camera.lookZ,player.z-lookBack+nz*lookAhead,1-Math.exp(-9.4*dt));
 }
+function updateWorldAmbience(dt){
+  if(!soundOn||!audio||state!=='playing')return;
+  stadiumAmbienceTimer-=dt;trafficHornTimer-=dt;
+  if(stadiumAmbienceTimer<=0){
+    let nearest=null,nearestDistance=Infinity,isStadium=false;
+    for(const field of SOCCER_FIELDS){const distance=Math.hypot(field.x-player.x,field.z-player.z);if(distance<nearestDistance){nearest=field;nearestDistance=distance;isStadium=false}}
+    for(const stadium of SOCCER_STADIUMS){const distance=Math.hypot(stadium.x-player.x,stadium.z-player.z);if(distance<nearestDistance){nearest=stadium;nearestDistance=distance;isStadium=true}}
+    if(nearest&&nearestDistance<(isStadium?1050:720)){
+      const spatial=spatialAudioPosition(nearest.x,nearest.z,isStadium?1250:850),gain=spatial.gain;
+      if(isStadium&&Math.random()<.72)playDesignedSample('chant',{vol:.025*gain,rate:rnd(.94,1.04),filter:3000,pan:spatial.pan,wet:.24,category:'music',priority:2});
+      if(Math.random()<.62)playDesignedSample('whistle',{vol:.011*gain,rate:rnd(.92,1.09),filter:7600,pan:spatial.pan,wet:.20,delay:rnd(.08,.42),priority:2});
+      stadiumAmbienceTimer=rnd(isStadium?5.5:7.5,isStadium?10.5:13.5);
+    }else stadiumAmbienceTimer=3.5;
+  }
+  if(trafficHornTimer<=0){
+    let candidate=null,best=760*760;
+    for(const object of objects){
+      if(object.dead||object.sinking||!object.moving||!VEHICLE_TYPES.has(object.type))continue;
+      const distanceSq=dist2(object.x,object.z,player.x,player.z);if(distanceSq<best){best=distanceSq;candidate=object}
+    }
+    if(candidate){const spatial=spatialAudioPosition(candidate.x,candidate.z,850);playDesignedSample('horn',{vol:.010*spatial.gain,rate:rnd(.88,1.12),filter:4300,pan:spatial.pan,wet:.06,priority:1})}
+    trafficHornTimer=rnd(5.5,11.5);
+  }
+}
 function update(dt){
   simulationClock+=dt;
   const timeDrain=activePowers.eventHorizon>0?.12:1;
@@ -2309,7 +2968,10 @@ function update(dt){
   updatePowerups(dt);
   updateInput(dt);
   updateObjects(dt);
+  updateCityRenewal(dt);
   updateEffects(dt);
+  updateWorldAmbience(dt);
+  updateAdaptiveAudio();
 }
 
 /* ---------- 3D rendering ---------- */
@@ -2581,21 +3243,21 @@ function drawCityBase(){
   draw(STATIC_CITY.crosswalks,m4(),COLORS.line,1,1);
 
   // The starting plaza is centered inside one block and stays clear of traffic.
-  if(sphereInView(SPAWN.x,.6,SPAWN.z,SPAWN_SAFE_RADIUS+28,80)){
+  if(startPlaza.active&&sphereInView(startPlaza.x,.6,startPlaza.z,SPAWN_SAFE_RADIUS+28,80)){
   gl.disable(gl.CULL_FACE);
   draw(
     mesh.disc,
-    modelMatrix(SPAWN.x,.58,SPAWN.z,SPAWN_SAFE_RADIUS,1,SPAWN_SAFE_RADIUS),
+    modelMatrix(startPlaza.x,.58,startPlaza.z,SPAWN_SAFE_RADIUS,1,SPAWN_SAFE_RADIUS),
     shade('#aeb5b7',.95),1,0,.04
   );
   draw(
     mesh.ring,
-    modelMatrix(SPAWN.x,.68,SPAWN.z,SPAWN_SAFE_RADIUS*.94,1,SPAWN_SAFE_RADIUS*.94),
+    modelMatrix(startPlaza.x,.68,startPlaza.z,SPAWN_SAFE_RADIUS*.94,1,SPAWN_SAFE_RADIUS*.94),
     shade('#d9dddc',.94),.82,1
   );
   draw(
     mesh.ring,
-    modelMatrix(SPAWN.x,.70,SPAWN.z,SPAWN_SAFE_RADIUS*.50,1,SPAWN_SAFE_RADIUS*.50),
+    modelMatrix(startPlaza.x,.70,startPlaza.z,SPAWN_SAFE_RADIUS*.50,1,SPAWN_SAFE_RADIUS*.50),
     shade('#8e999d',.90),.48,1
   );
   gl.enable(gl.CULL_FACE);
@@ -3447,7 +4109,7 @@ function drawMinimap(force=false){
     if(mythic){mapCtx.beginPath();mapCtx.arc(sx,sz,6.3,0,TAU);mapCtx.strokeStyle='rgba(255,91,215,.58)';mapCtx.lineWidth=1;mapCtx.stroke()}
   }
   mapCtx.globalAlpha=1;mapCtx.fillStyle='#080610';
-  const px=clamp((player.x+WORLD.w/2)/WORLD.w*w,5,w-5),pz=clamp((player.z+WORLD.d/2)/WORLD.d*h,5,h-5),mapHoleR=clamp(player.r/WORLD.w*w,4,15);
+  const px=(player.x+WORLD.w/2)/WORLD.w*w,pz=(player.z+WORLD.d/2)/WORLD.d*h,mapHoleR=clamp(player.r/WORLD.w*w,4,15);
   mapCtx.beginPath();mapCtx.arc(px,pz,mapHoleR,0,TAU);mapCtx.fill();mapCtx.strokeStyle='#a98dff';mapCtx.lineWidth=2;mapCtx.beginPath();mapCtx.arc(px,pz,mapHoleR+3,0,TAU);mapCtx.stroke();
 }
 function loop(now){
@@ -3491,50 +4153,69 @@ canvas.addEventListener('webglcontextrestored',()=>{
 /* ---------- Controls ---------- */
 function pointerDirection(x,y){
   const dx=x-width/2,dy=y-height/2,d=Math.hypot(dx,dy);
-  input.x=d?dx/d:0;input.z=d?dy/d:0;input.active=d>18;
+  input.x=d?dx/d:0;input.z=d?dy/d:0;input.active=d>18;input.source=input.active?'mouse':'none';
+}
+function setJoystickCenter(x,y){
+  // The visual pad and the mathematical origin are always identical. The pad
+  // may sit partly off-screen when a thumb begins at an edge, which is less
+  // confusing than silently shifting the control center away from the touch.
+  touchCenterX=clamp(x,0,width);
+  touchCenterY=clamp(y,height*.46,height);
+  touchOrigin.style.left=touchCenterX+'px';
+  touchOrigin.style.top=touchCenterY+'px';
 }
 function updateTouch(e){
-  const dx=e.clientX-touchStartX;
-  const dy=e.clientY-touchStartY;
-  const max=Math.min(76,Math.max(54,width*.16));
-  const dead=7;
-  const d=Math.hypot(dx,dy);
-  const k=d>max?max/d:1;
-  const visualX=dx*k,visualY=dy*k;
-  touchKnob.style.transform=`translate(${visualX}px,${visualY}px)`;
+  touchLastX=e.clientX;touchLastY=e.clientY;
+  let dx=touchLastX-touchCenterX,dy=touchLastY-touchCenterY;
+  let distance=Math.hypot(dx,dy);
 
-  if(d<=dead){
-    input.x=0;input.z=0;input.active=true;
+  // The floating base follows a drifting thumb instead of forcing the player
+  // to stretch against an invisible fixed origin.
+  const followThreshold=JOYSTICK_RADIUS*1.18;
+  if(distance>followThreshold){
+    const shift=distance-JOYSTICK_RADIUS;
+    touchCenterX+=dx/distance*shift;
+    touchCenterY+=dy/distance*shift;
+    setJoystickCenter(touchCenterX,touchCenterY);
+    dx=touchLastX-touchCenterX;dy=touchLastY-touchCenterY;
+    distance=Math.hypot(dx,dy);
+  }
+
+  const clampedDistance=Math.min(distance,JOYSTICK_RADIUS);
+  const nx=distance>.001?dx/distance:0;
+  const nz=distance>.001?dy/distance:0;
+  touchKnob.style.transform=`translate(${nx*clampedDistance}px,${nz*clampedDistance}px)`;
+
+  if(distance<=JOYSTICK_DEAD_ZONE){
+    input.x=0;input.z=0;input.active=false;input.source='touch';
     return;
   }
 
-  const strength=clamp((Math.min(d,max)-dead)/(max-dead),0,1);
-  input.x=(dx/d)*strength;
-  input.z=(dy/d)*strength;
+  const raw=clamp((clampedDistance-JOYSTICK_DEAD_ZONE)/(JOYSTICK_RADIUS-JOYSTICK_DEAD_ZONE),0,1);
+  // One predictable response curve: responsive near center, still linear at
+  // full throw. The previous build curved the input twice.
+  const strength=raw*(1.34-.34*raw);
+  input.x=nx*strength;
+  input.z=nz*strength;
   input.active=true;
+  input.source='touch';
 }
 function beginTouch(e){
-  if(state!=='playing'||e.clientY<height*.5||touchPointer!==null)return false;
+  if(state!=='playing'||e.clientY<height*.46||touchPointer!==null)return false;
   touchPointer=e.pointerId;
-  touchStartX=e.clientX;
-  touchStartY=e.clientY;
-  const pad=72;
-  const visualX=clamp(e.clientX,pad,width-pad);
-  const visualY=clamp(e.clientY,height*.5+pad*.45,height-pad);
-  touchOrigin.style.left=visualX+'px';
-  touchOrigin.style.top=visualY+'px';
+  touchLastX=e.clientX;touchLastY=e.clientY;
+  setJoystickCenter(e.clientX,e.clientY);
   touchOrigin.classList.add('show');
   touchKnob.style.transform='translate(0,0)';
+  input.x=0;input.z=0;input.active=false;input.source='touch';
   try{canvas.setPointerCapture(e.pointerId)}catch(_){}
-  updateTouch(e);
   return true;
 }
 function stopTouch(e=null){
   if(touchPointer===null)return;
   if(e&&e.pointerId!==touchPointer)return;
   touchPointer=null;
-  input.active=false;
-  input.x=0;input.z=0;
+  input.active=false;input.x=0;input.z=0;input.source='none';
   touchKnob.style.transform='translate(0,0)';
   touchOrigin.classList.remove('show');
 }
@@ -3559,11 +4240,11 @@ canvas.addEventListener('pointermove',e=>{
 });
 canvas.addEventListener('pointerup',e=>{
   if(e.pointerId===touchPointer)stopTouch(e);
-  else if(e.pointerType==='mouse')input.active=false;
+  else if(e.pointerType==='mouse'){input.active=false;input.source='none'};
 });
 canvas.addEventListener('pointercancel',e=>{
   if(e.pointerId===touchPointer)stopTouch(e);
-  else input.active=false;
+  else{input.active=false;input.source='none'};
 });
 canvas.addEventListener('lostpointercapture',e=>{
   if(e.pointerId===touchPointer)stopTouch(e);
@@ -3588,7 +4269,7 @@ $('restartPause').onclick=startGame;
 $('soundBtn').onclick=()=>{
   soundOn=!soundOn;$('soundBtn').textContent=soundOn?'🔊':'🔇';
   if(!soundOn){stopAllAudioVoices();if(audioMaster&&audio)audioMaster.gain.setTargetAtTime(.0001,audio.currentTime,.015)}
-  else{initAudio();if(audioMaster&&audio)audioMaster.gain.setTargetAtTime(.72,audio.currentTime,.02);if(audio&&audio.state==='suspended')audio.resume().catch(()=>{});synthTone(440,.20,{type:'sine',vol:.028,endFreq:660,filter:5200,wet:.32,category:'ui',priority:3});synthTone(880,.18,{type:'sine',vol:.018,delay:.045,endFreq:990,filter:8000,wet:.42,category:'ui',priority:3})}
+  else{initAudio();if(audioMaster&&audio)audioMaster.gain.setTargetAtTime(.68,audio.currentTime,.02);if(audio&&audio.state==='suspended')audio.resume().catch(()=>{});uiConfirmSound()}
 };
 document.addEventListener('visibilitychange',()=>{
   if(document.hidden){
@@ -3603,6 +4284,6 @@ view=lookAt([camera.x,camera.y,camera.z],[camera.lookX,0,camera.lookZ]);
 render();
 })();
 </script>
-<div style="position:fixed;right:7px;bottom:5px;z-index:2;color:rgba(255,255,255,.22);font:9px system-ui;pointer-events:none">v2.7 production core</div>
+<div style="position:fixed;right:7px;bottom:5px;z-index:2;color:rgba(255,255,255,.22);font:9px system-ui;pointer-events:none">v4.0 infinite city</div>
 </body>
 </html>
